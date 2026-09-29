@@ -28,17 +28,18 @@
 
   <!-- ==================================================== -->
   <!-- ==================================================== -->
-  <!-- 1. HEADER (LEFT 3-LINE MENU • MIDDLE BRAND TITLE • RIGHT UTILITIES) -->
+  <!-- 1. HEADER (LEFT MENU + SHOP NOW • RIGHT UTILITIES)   -->
   <!-- ==================================================== -->
   <header id="main-header" class="site-header">
     <div class="header-container">
       
-      <!-- Left: 3-Line Menu Button -->
+      <!-- Left: Minimal Menu Button & Shop Now Pill -->
       <div class="header-left">
-        <button id="nav-drawer-toggle" class="nav-3line-btn" aria-label="Open Menu" title="Open Navigation Menu">
-          <i class="fa-solid fa-bars"></i>
-          <span>MENU</span>
+        <button id="nav-drawer-toggle" class="nav-minimal-btn" aria-label="Open Menu" title="Open Navigation Menu">
+          <span class="menu-bar"></span>
+          <span class="menu-bar"></span>
         </button>
+        <a href="#shop-section" class="header-shop-pill">Shop Now</a>
       </div>
 
       <!-- Middle: Centered Brand Logo & Title -->
@@ -49,7 +50,6 @@
           </div>
           <div class="brand-text-wrap text-center">
             <span class="brand-name">THE <strong>TIMBER LIGHTS</strong></span>
-            <span class="brand-subtag">WOODEN LIGHTING ELEGANCE</span>
           </div>
         </a>
       </div>
@@ -57,23 +57,23 @@
       <!-- Right: Action Utilities -->
       <div class="header-right header-actions">
         <!-- Search -->
-        <button id="search-trigger" class="action-btn" aria-label="Search Catalog" title="Search (Ctrl+K)">
+        <button id="search-trigger" class="action-circle-btn" aria-label="Search Catalog" title="Search (Ctrl+K)">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
 
         <!-- Account -->
-        <button id="account-trigger" class="action-btn" aria-label="Account" title="Account">
+        <button id="account-trigger" class="action-circle-btn" aria-label="Account" title="Account">
           <i class="fa-regular fa-user"></i>
         </button>
 
         <!-- Wishlist -->
-        <button id="wishlist-trigger" class="action-btn badge-btn" aria-label="Wishlist" title="Wishlist">
+        <button id="wishlist-trigger" class="action-circle-btn badge-btn" aria-label="Wishlist" title="Wishlist">
           <i class="fa-regular fa-heart"></i>
           <span id="wishlist-count" class="badge-count">0</span>
         </button>
 
         <!-- Cart -->
-        <button id="cart-trigger" class="action-btn badge-btn cart-btn-accent" aria-label="Shopping Cart" title="Cart">
+        <button id="cart-trigger" class="action-circle-btn badge-btn" aria-label="Shopping Cart" title="Cart">
           <i class="fa-solid fa-bag-shopping"></i>
           <span id="cart-count" class="badge-count">0</span>
         </button>
@@ -138,19 +138,31 @@
     <!-- ==================================================== -->
     <!-- 2. FULL HERO SECTION (FULL IMAGE WITH CENTER TEXT)   -->
     <!-- ==================================================== -->
+    <!-- ==================================================== -->
+    <!-- 2. FULL HERO SECTION (CENTRAL "The Timber Lights")   -->
+    <!-- ==================================================== -->
     <section id="hero" class="hero-section">
       <div class="hero-image-wrap" id="hero-scene">
         <img src="images/hero_timber_dining.png" alt="The Timber Lights" class="hero-bg-img" id="hero-full-img">
         <div class="hero-overlay-scrim"></div>
+        
+        <!-- Center Luxury Hero Typography -->
         <div class="hero-center-content">
-          <span class="hero-tag">COLLECTION 2026 &bull; VOLUME 01</span>
-          <h1 class="hero-main-title">THE <strong>TIMBER LIGHTS</strong></h1>
-          <p class="hero-subtag-text">WOODEN LIGHTING ELEGANCE</p>
-          <p class="hero-tagline">Handcrafted Solid Ghana Teak Wood Architectural Lighting</p>
-          <div class="hero-cta-buttons">
-            <a href="#shop-section" class="btn btn-primary btn-lg">SHOP NOW</a>
-            <a href="#finishes-section" class="btn btn-outline-light btn-lg">VIEW PRODUCTS</a>
-          </div>
+          <h1 class="hero-main-title">The Timber Lights</h1>
+          <p class="hero-tagline">Architectural Handcrafted Wooden Lighting &bull; Collection 2026</p>
+        </div>
+
+        <!-- Floating Corner Badges -->
+        <div class="hero-bottom-left">
+          <span class="hero-brand-vertical">THE TIMBER LIGHTS</span>
+          <span class="hero-origin-label">Solid Ghana Teak Wood</span>
+        </div>
+
+        <div class="hero-bottom-right">
+          <a href="#shop-section" class="hero-explore-btn">
+            <span>Explore 25 Models</span>
+            <i class="fa-solid fa-arrow-down"></i>
+          </a>
         </div>
       </div>
     </section>
