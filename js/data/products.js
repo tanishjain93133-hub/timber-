@@ -1070,3 +1070,21 @@ window.TIMBER_PRODUCTS = [
     }
   }
 ];
+
+// Initialize and sync with localStorage
+(function() {
+  try {
+    const saved = localStorage.getItem("timber_products_v2");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        window.TIMBER_PRODUCTS = parsed;
+      }
+    } else {
+      localStorage.setItem("timber_products_v2", JSON.stringify(window.TIMBER_PRODUCTS));
+    }
+  } catch (e) {
+    // fallback to default
+  }
+})();
+
