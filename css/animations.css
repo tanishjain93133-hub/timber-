@@ -1,0 +1,227 @@
+/* ==========================================================================
+   TIMBER LIGHT — ANIMATIONS & CINEMATIC EFFECTS (css/animations.css)
+   ========================================================================== */
+
+/* 1. Custom Glowing Cursor */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  transition: transform 0.05s ease-out, opacity 0.3s ease;
+  opacity: 0;
+}
+
+body.cursor-active .custom-cursor {
+  opacity: 1;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #FFFFFF, 0 0 20px var(--amber-glow);
+  transition: transform 0.15s ease-out;
+}
+
+.cursor-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.45) 0%, rgba(245, 158, 11, 0.1) 50%, transparent 70%);
+  transition: width 0.25s ease, height 0.25s ease, background 0.25s ease;
+}
+
+/* Cursor States */
+body.cursor-hovering .cursor-dot {
+  transform: scale(1.6);
+  background-color: var(--amber-glow);
+}
+
+body.cursor-hovering .cursor-glow {
+  width: 72px;
+  height: 72px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.6) 0%, rgba(245, 158, 11, 0.2) 60%, transparent 80%);
+}
+
+body.cursor-pressing .cursor-dot {
+  transform: scale(2.2);
+  box-shadow: 0 0 25px #FFFFFF, 0 0 50px var(--amber-glow);
+}
+
+body.cursor-pressing .cursor-glow {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(251, 191, 36, 0.5) 40%, transparent 75%);
+}
+
+/* 2. Hero Cinematic Loader Opening Animation */
+.hero-cinematic-loader {
+  position: absolute;
+  inset: 0;
+  background-color: #060709;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.2s;
+}
+
+.hero-cinematic-loader.loaded {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.intro-beam-line {
+  width: 0%;
+  height: 2px;
+  background: #FFFFFF;
+  box-shadow: 0 0 15px #FFF, 0 0 30px var(--amber-glow);
+  border-radius: 2px;
+  animation: beamIgnite 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.intro-logo-reveal {
+  margin-top: 1.5rem;
+  opacity: 0;
+  transform: translateY(15px);
+  animation: logoFadeUp 1.2s 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  text-align: center;
+}
+
+.intro-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: 0.12em;
+}
+
+.intro-tagline {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+
+@keyframes beamIgnite {
+  0% { width: 0%; opacity: 0; }
+  30% { width: 10%; opacity: 1; }
+  70% { width: 45%; }
+  100% { width: 85%; max-width: 480px; opacity: 1; }
+}
+
+@keyframes logoFadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 3. Luminaire Interaction Hint Pulse */
+.interaction-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.hero-luminaire.is-on .interaction-pulse {
+  opacity: 0;
+}
+
+.pulse-ring {
+  position: absolute;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--amber-glow);
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.4);
+  animation: pulseRipple 2.2s infinite cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pulse-ring.ring-1 {
+  width: 140px;
+  height: 40px;
+}
+
+.pulse-ring.ring-2 {
+  width: 190px;
+  height: 60px;
+  animation-delay: 0.6s;
+}
+
+.pulse-badge {
+  background: rgba(9, 10, 12, 0.88);
+  border: 1px solid var(--amber-border);
+  color: var(--amber-glow);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  animation: floatHint 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseRipple {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@keyframes floatHint {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* 4. General Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scroll reveal helper classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Shimmer on highlights */
+.shimmer-text {
+  background: linear-gradient(90deg, #FFFFFF 0%, #FBBF24 50%, #FFFFFF 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 4s linear infinite;
+}
+
+@keyframes textShimmer {
+  to { background-position: 200% center; }
+}

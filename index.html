@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE TIMBER LIGHTS | Wooden Lighting Elegance — Complete Catalog</title>
+  <meta name="description" content="Shop all 25 designer hanging wooden lights from The Timber Lights (Collection 2026, Volume 01). Handcrafted from Premium Ghana Teak Wood. 8 Wood Polish & 4 Coating options.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/products.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ==================================================== -->
+  <!-- ==================================================== -->
+  <!-- 1. HEADER (LEFT 3-LINE MENU • MIDDLE BRAND TITLE • RIGHT UTILITIES) -->
+  <!-- ==================================================== -->
+  <header id="main-header" class="site-header">
+    <div class="header-container">
+      
+      <!-- Left: 3-Line Menu Button -->
+      <div class="header-left">
+        <button id="nav-drawer-toggle" class="nav-3line-btn" aria-label="Open Menu" title="Open Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
+          <span>MENU</span>
+        </button>
+      </div>
+
+      <!-- Middle: Centered Brand Logo & Title -->
+      <div class="header-center">
+        <a href="#hero" class="brand-logo brand-centered" aria-label="THE TIMBER LIGHTS Home">
+          <div class="logo-mark">
+            <span class="luminaire-beam"></span>
+          </div>
+          <div class="brand-text-wrap text-center">
+            <span class="brand-name">THE <strong>TIMBER LIGHTS</strong></span>
+            <span class="brand-subtag">WOODEN LIGHTING ELEGANCE</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Right: Action Utilities -->
+      <div class="header-right header-actions">
+        <!-- Search -->
+        <button id="search-trigger" class="action-btn" aria-label="Search Catalog" title="Search (Ctrl+K)">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+
+        <!-- Account -->
+        <button id="account-trigger" class="action-btn" aria-label="Account" title="Account">
+          <i class="fa-regular fa-user"></i>
+        </button>
+
+        <!-- Wishlist -->
+        <button id="wishlist-trigger" class="action-btn badge-btn" aria-label="Wishlist" title="Wishlist">
+          <i class="fa-regular fa-heart"></i>
+          <span id="wishlist-count" class="badge-count">0</span>
+        </button>
+
+        <!-- Cart -->
+        <button id="cart-trigger" class="action-btn badge-btn cart-btn-accent" aria-label="Shopping Cart" title="Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span id="cart-count" class="badge-count">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Slide-Out Navigation Drawer -->
+  <div id="mobile-nav-drawer" class="mobile-nav-drawer" aria-hidden="true">
+    <div class="drawer-overlay" id="mobile-drawer-overlay"></div>
+    <div class="drawer-content">
+      <div class="drawer-header">
+        <div class="brand-text-wrap">
+          <span class="brand-name">THE <strong>TIMBER LIGHTS</strong></span>
+          <span class="brand-subtag">WOODEN LIGHTING ELEGANCE</span>
+        </div>
+        <button id="mobile-drawer-close" class="close-btn" aria-label="Close Menu">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <nav class="mobile-nav-links">
+        <a href="#hero" class="mobile-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#shop-section" class="mobile-link"><i class="fa-solid fa-layer-group"></i> Shop All Models</a>
+        <a href="#finishes-section" class="mobile-link"><i class="fa-solid fa-palette"></i> Finishes &amp; Polish (8 Options)</a>
+        <a href="#about" class="mobile-link"><i class="fa-solid fa-shield-halved"></i> About Craftsmanship</a>
+        <a href="#contact" class="mobile-link"><i class="fa-solid fa-phone"></i> Contact &amp; Orders</a>
+      </nav>
+      
+      <div class="drawer-featured-models">
+        <span class="drawer-sub-title">Signature Timber Lights:</span>
+        <div class="drawer-model-chips">
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_baluster_finial')">TL-BAL18 (18" Baluster Finial)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_walnut_bead_brass')">TL-WBD20 (20" Walnut Totem)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_duo_disc_spindle')">TL-SPN24 (24" Spindle Duo)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_twist_fluted_single')">TL-TWST10 (10" Spiral Twist)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_finial_bead_spindle')">TL-FIN16 (16" Finial Bead)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_classic_dome_finial')">TL-DOME18 (18" Dome Finial)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_flared_disc_duo')">TL-DISC16 (16" Flared Saucer)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_zen_halo_globe')">TL-HALO14 (14" Ripple Halo)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_chalice_spindle')">TL-CHAL18 (18" Chalice Downlight)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_zen_halo_trio')">TL-HALO3 (28" Halo Chandelier)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_bead_trio')">TL-BEAD3 (32" Totem Trio)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_stacked_totem_single')">TL-STK18 (18" Stacked Totem)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_cylinder_linear_bar')">TL-CYL48 (48" Linear Cylinder)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_slotted_channel_linear')">TL-CHAN54 (54" Slotted Channel)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_totem_quad')">TL-TOT4 (36" Totem Quad)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_totem_duo')">TL-TOT2 (30" Totem Duo)</button>
+        </div>
+      </div>
+
+      <div style="margin-top:auto; padding-top:1.5rem; border-top:1px solid var(--border-color); font-size:0.8rem; color:var(--text-muted);">
+        <p style="margin-bottom:0.4rem;"><i class="fa-solid fa-phone text-accent"></i> +91 9376177250</p>
+        <p style="margin-bottom:0.4rem;"><i class="fa-solid fa-envelope text-accent"></i> thetimberlight@gmail.com</p>
+        <p><i class="fa-solid fa-location-dot text-accent"></i> Paldi, Ahmedabad, Gujarat, India</p>
+      </div>
+    </div>
+  </div>
+
+  <main id="main-content">
+    
+    <!-- ==================================================== -->
+    <!-- 2. FULL HERO SECTION (FULL IMAGE WITH CENTER TEXT)   -->
+    <!-- ==================================================== -->
+    <section id="hero" class="hero-section">
+      <div class="hero-image-wrap" id="hero-scene">
+        <img src="images/hero_timber_dining.png" alt="The Timber Lights" class="hero-bg-img" id="hero-full-img">
+        <div class="hero-overlay-scrim"></div>
+        <div class="hero-center-content">
+          <span class="hero-tag">COLLECTION 2026 &bull; VOLUME 01</span>
+          <h1 class="hero-main-title">THE <strong>TIMBER LIGHTS</strong></h1>
+          <p class="hero-subtag-text">WOODEN LIGHTING ELEGANCE</p>
+          <p class="hero-tagline">Handcrafted Solid Ghana Teak Wood Architectural Lighting</p>
+          <div class="hero-cta-buttons">
+            <a href="#shop-section" class="btn btn-primary btn-lg">SHOP NOW</a>
+            <a href="#finishes-section" class="btn btn-outline-light btn-lg">VIEW PRODUCTS</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- 3. FEATURED PRODUCTS (FROM PDF)                      -->
+    <!-- ==================================================== -->
+    <section id="featured-section" class="section featured-section">
+      <div class="section-container">
+        
+        <div class="section-header flex-between">
+          <div>
+            <h2 class="section-title">Featured Timber Lights</h2>
+            <p class="section-subtitle">Explore bestselling wooden pendant models from our Collection 2026 catalog.</p>
+          </div>
+          <a href="#shop-section" class="section-link">View All Models <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
+        <!-- 4 Products Per Row Desktop / 2 Mobile Grid -->
+        <div class="products-grid" id="home-featured-grid">
+          <!-- Populated via CatalogEngine.renderHomeShowcase() -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- 4. WOOD POLISH & FINISH OPTIONS (FROM PDF PAGE 5)     -->
+    <!-- ==================================================== -->
+    <section id="finishes-section" class="section bg-subtle">
+      <div class="section-container">
+        
+        <div class="section-header text-center">
+          <span class="ttl-tag">CATALOG PAGE 05 SPECIFICATIONS</span>
+          <h2 class="section-title">Wood Polish &amp; Coating Options</h2>
+          <p class="section-subtitle">Any finish can be achieved on your selected polish color (Matt, Semi, or Glossy).</p>
+        </div>
+
+        <div class="finishes-overview-grid">
+          
+          <!-- 1. Wood Polish Swatches -->
+          <div class="finish-group-card">
+            <h3><i class="fa-solid fa-palette text-accent"></i> Wood Polish Colors (8 Options)</h3>
+            <p class="finish-group-desc">Crafted on 100% Premium Ghana Teak Wood:</p>
+            <div class="polish-swatches-list">
+              <span class="polish-badge"><span class="swatch-dot dot-walnut"></span> Walnut</span>
+              <span class="polish-badge"><span class="swatch-dot dot-oak"></span> Oak</span>
+              <span class="polish-badge"><span class="swatch-dot dot-teak"></span> Teak</span>
+              <span class="polish-badge"><span class="swatch-dot dot-mahogany"></span> Mahogany</span>
+              <span class="polish-badge"><span class="swatch-dot dot-cherry"></span> Cherry</span>
+              <span class="polish-badge"><span class="swatch-dot dot-maple"></span> Maple</span>
+              <span class="polish-badge"><span class="swatch-dot dot-ash"></span> Ash</span>
+              <span class="polish-badge"><span class="swatch-dot dot-cedar"></span> Cedar</span>
+            </div>
+          </div>
+
+          <!-- 2. Wood Coating & Finish Tones -->
+          <div class="finish-group-card">
+            <h3><i class="fa-solid fa-shield-halved text-accent"></i> Coating &amp; Finish Tones</h3>
+            <p class="finish-group-desc">Available protective coatings and surface reflections:</p>
+            
+            <div style="margin-bottom:1rem;">
+              <strong style="display:block; font-size:0.82rem; margin-bottom:0.4rem; color:var(--text-main);">Protective Coatings:</strong>
+              <div class="coating-chips-list">
+                <span class="coating-badge">Laquer</span>
+                <span class="coating-badge">Melamine</span>
+                <span class="coating-badge">PU (Polyurethane)</span>
+                <span class="coating-badge">Wax</span>
+              </div>
+            </div>
+
+            <div>
+              <strong style="display:block; font-size:0.82rem; margin-bottom:0.4rem; color:var(--text-main);">Surface Sheen:</strong>
+              <div class="coating-chips-list">
+                <span class="tone-badge">Matt</span>
+                <span class="tone-badge">Semi-Gloss</span>
+                <span class="tone-badge">Glossy</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Size Note Banner -->
+        <div class="pdf-size-note-box">
+          <i class="fa-solid fa-circle-info text-accent"></i>
+          <div>
+            <strong>CATALOG SIZE NOTE:</strong>
+            <span>Size mentioned is net wood size. Bulb will be as per actual.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- 5. SHOP SECTION                                      -->
+    <!-- ==================================================== -->
+    <section id="shop-section" class="section shop-section">
+      <div class="section-container">
+        
+        <div class="section-header">
+          <h2 class="section-title">All Timber Light Models</h2>
+          <p class="section-subtitle">Complete collection of handcrafted Ghanaian Teak Wood pendant luminaires, linear beams, and geometric chandeliers.</p>
+        </div>
+
+        <!-- Simple Filter Bar -->
+        <div class="shop-filter-bar">
+          
+          <!-- Search Bar -->
+          <div class="filter-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="catalog-search-input" placeholder="Search by model (e.g. TL-BAL18, TL-CYL48, TL-TOT4, TL-DISC16, 18&quot;)...">
+            <button id="catalog-search-clear" class="clear-btn d-none" aria-label="Clear Search"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <!-- Height Filter -->
+          <div class="filter-select-wrap">
+            <label for="filter-height-select">Height / Size:</label>
+            <select id="filter-height-select">
+              <option value="all">All Sizes</option>
+              <option value="8">8" Height</option>
+              <option value="10">10" Height</option>
+              <option value="12">12" Height</option>
+              <option value="14">14" Diameter / Halo</option>
+              <option value="15">15" Height</option>
+              <option value="16">16" Diameter / Saucer</option>
+              <option value="18">18" Height</option>
+              <option value="20">20" Height</option>
+              <option value="24">24" Height</option>
+              <option value="28">28" Cluster / Drop</option>
+              <option value="30">30" Drop / Totem</option>
+              <option value="32">32" Drop / Cluster</option>
+              <option value="36">36" Drop / Totem</option>
+              <option value="48">48" Length (Linear)</option>
+              <option value="54">54" Length (Linear)</option>
+            </select>
+          </div>
+
+          <!-- Price Sort -->
+          <div class="filter-select-wrap">
+            <label for="catalog-sort">Sort by:</label>
+            <select id="catalog-sort">
+              <option value="featured">Featured (Catalog Order)</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="newest">Catalog Page</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Active Filter Status & Count -->
+        <div class="shop-results-status">
+          <span id="catalog-count-label">Showing all models</span>
+          <button id="catalog-reset-btn" class="btn-text" style="display:none;">Reset Filters</button>
+        </div>
+
+        <!-- Main Product Grid (4 desktop / 2 mobile) -->
+        <div class="products-grid" id="products-grid">
+          <!-- Populated dynamically via CatalogEngine.renderCatalog() -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="catalog-empty-state" class="empty-state d-none">
+          <i class="fa-solid fa-box-open"></i>
+          <h3>No models match your search</h3>
+          <p>Try searching for a different model name or resetting the size filter.</p>
+          <button class="btn btn-outline mt-3" onclick="CatalogEngine.resetFilters()">Show All Models</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- 6. ABOUT US (FROM PDF PAGE 2, 3, 4)                  -->
+    <!-- ==================================================== -->
+    <section id="about" class="section about-section bg-subtle">
+      <div class="section-container">
+        <div class="about-grid">
+          <div class="about-text">
+            <span class="about-tag">ABOUT US &bull; THE TIMBER LIGHTS</span>
+            <h2>Architectural Focal Point. Warm, Balanced Illumination.</h2>
+            <p>
+              <strong>The Timber Lights</strong> was founded with a clear vision — to create statement pendant lighting that feels architectural, timeless, and uncompromising in quality.
+            </p>
+            <p>
+              By combining material craftsmanship with advanced lighting technology, we have developed refined wooden pendant systems that integrate seamlessly into sophisticated environments.
+            </p>
+            
+            <div style="margin: 1.5rem 0; padding-left:1rem; border-left: 3px solid var(--amber-core); font-size:0.9rem; color:var(--text-secondary); line-height:1.6;">
+              <p>&bull; <strong>Clean, disciplined design</strong></p>
+              <p>&bull; <strong>Premium, carefully selected materials (Ghana Teak Wood)</strong></p>
+              <p>&bull; <strong>Precision engineering and detailing</strong></p>
+              <p>&bull; <strong>Warm, balanced illumination</strong></p>
+            </div>
+
+            <p style="font-weight:600; color:var(--text-main);">
+              Lighting is not an accessory. It is an architectural focal point.
+            </p>
+          </div>
+
+          <div class="about-image-card">
+            <div class="about-quote-box">
+              <i class="fa-solid fa-quote-left" style="font-size:1.5rem; color:var(--amber-core); margin-bottom:0.75rem; display:block;"></i>
+              <p style="font-size:1.1rem; font-weight:700; color:var(--text-main); line-height:1.4;">
+                &ldquo;In every space, there is a light that holds attention. We choose to illuminate it.&rdquo;
+              </p>
+              <span style="display:block; margin-top:0.75rem; font-size:0.8rem; color:var(--amber-dark); font-weight:700; text-transform:uppercase;">
+                — The Timber Lights Philosophy
+              </span>
+            </div>
+
+            <div style="margin-top:1.5rem; padding:1rem; background:#FFFFFF; border:1px solid var(--border-color); border-radius:var(--radius-sm); font-size:0.82rem; color:var(--text-secondary);">
+              <strong>Our Commitment to Excellence:</strong> Dedicated to using sustainable materials, creating timeless designs, and showcasing artisanal craftsmanship.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================== -->
+    <!-- 7. CONTACT SECTION (FROM PDF BUSINESS CARD & P13)    -->
+    <!-- ==================================================== -->
+    <section id="contact" class="section contact-section">
+      <div class="section-container">
+        <div class="section-header text-center">
+          <h2 class="section-title">Contact &amp; Ordering</h2>
+          <p class="section-subtitle">Get in touch directly with The Timber Lights for orders, finishes, and custom requirements.</p>
+        </div>
+
+        <div class="contact-wrap">
+          <div class="contact-info-panel">
+            <h3>THE TIMBER LIGHTS</h3>
+            <p style="color:var(--amber-dark); font-weight:700; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:1rem;">WOODEN LIGHTING ELEGANCE</p>
+            
+            <p><i class="fa-solid fa-phone text-accent"></i> <strong>+91 9376177250</strong></p>
+            <p><i class="fa-solid fa-envelope text-accent"></i> <strong>thetimberlight@gmail.com</strong></p>
+            <p><i class="fa-solid fa-location-dot text-accent"></i> 601 Anikhedya Capitol 2, Mahalakshmi Five Cross Road, Paldi, Ahmedabad, Gujarat, India</p>
+            <p><i class="fa-solid fa-book-open text-accent"></i> Collection 2026 &bull; Volume 01</p>
+          </div>
+
+          <form id="contact-form" class="contact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Full Name *</label>
+                <input type="text" id="contact-name" class="form-control" placeholder="Rajesh Sharma" required>
+              </div>
+              <div class="form-group">
+                <label for="contact-phone">Phone Number *</label>
+                <input type="tel" id="contact-phone" class="form-control" placeholder="+91 93761 77250" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contact-email">Email Address *</label>
+              <input type="email" id="contact-email" class="form-control" placeholder="architect@studio.com" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-message">Inquiry / Model Selected</label>
+              <textarea id="contact-message" class="form-control" rows="3" placeholder="I am interested in Model HG1057 (15&quot;) and RK2985 (24&quot;) in Walnut polish PU finish..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================================================== -->
+  <!-- 8. FOOTER                                            -->
+  <!-- ==================================================== -->
+  <footer class="site-footer">
+    <div class="section-container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="brand-name">THE <strong>TIMBER LIGHTS</strong></span>
+          <span class="brand-subtag" style="display:block; font-size:0.7rem; color:var(--amber-dark); margin-top:0.2rem;">WOODEN LIGHTING ELEGANCE</span>
+          <p>Handcrafted architectural wooden pendant lighting crafted from Premium Ghana Teak Wood.</p>
+          <div class="footer-socials">
+            <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="#" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+            <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Models</h4>
+          <ul>
+            <li><a href="#shop-section">15" Height Models (HG1057, KG3058)</a></li>
+            <li><a href="#shop-section">24" Height Models (RK2985, RK1866)</a></li>
+            <li><a href="#shop-section">20" Height Models (SH5382, GW8936)</a></li>
+            <li><a href="#shop-section">8" &amp; 10" Compact Models</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Customization</h4>
+          <ul>
+            <li><a href="#finishes-section">8 Wood Polish Colors</a></li>
+            <li><a href="#finishes-section">Laquer, Melamine, PU, Wax</a></li>
+            <li><a href="#finishes-section">Matt, Semi &amp; Glossy Sheen</a></li>
+            <li><a href="#about">About Our Craftsmanship</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Direct Contact</h4>
+          <ul>
+            <li><span><i class="fa-solid fa-phone"></i> +91 9376177250</span></li>
+            <li><span><i class="fa-solid fa-envelope"></i> thetimberlight@gmail.com</span></li>
+            <li><span>Paldi, Ahmedabad, India</span></li>
+            <li><span>Collection 2026 &bull; Volume 01</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 THE TIMBER LIGHTS. All rights reserved.</p>
+        <p>Size mentioned is net wood size. Bulb will be as per actual.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================================================== -->
+  <!-- 9. PRODUCT DETAIL (PDP) MODAL                        -->
+  <!-- ==================================================== -->
+  <div id="product-detail-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-container pdp-modal-container">
+      <button class="modal-close-btn" id="pdp-modal-close" aria-label="Close Product Detail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="product-detail-body">
+        <!-- Rendered via js/components/product-detail.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 10. CART DRAWER MODAL                                -->
+  <!-- ==================================================== -->
+  <div id="cart-drawer-modal" class="drawer-modal" aria-hidden="true">
+    <div class="drawer-backdrop" id="cart-drawer-backdrop"></div>
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <i class="fa-solid fa-bag-shopping text-accent"></i>
+          <h3>Shopping Cart</h3>
+          <span id="cart-drawer-count" class="cart-items-count-badge">(0 items)</span>
+        </div>
+        <button id="cart-drawer-close" class="drawer-close-btn" aria-label="Close Cart">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="drawer-body" id="cart-drawer-items">
+        <!-- Rendered via cart.js -->
+      </div>
+
+      <div class="drawer-footer" id="cart-drawer-footer">
+        <div class="drawer-subtotal-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal-val">₹0</span>
+        </div>
+        <div class="drawer-subtotal-row">
+          <span>Taxes (Included)</span>
+          <span id="cart-gst-val">₹0</span>
+        </div>
+        <div class="drawer-total-row">
+          <span>Total MRP</span>
+          <span id="cart-total-val" class="text-accent">₹0</span>
+        </div>
+        <div class="drawer-actions-stack">
+          <button id="cart-checkout-btn" class="btn btn-primary w-full">Proceed to Checkout</button>
+          <button id="cart-continue-btn" class="btn btn-outline w-full">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 11. CHECKOUT MODAL                                   -->
+  <!-- ==================================================== -->
+  <div id="checkout-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-container checkout-modal-container">
+      <div class="checkout-modal-header">
+        <h3>Checkout &bull; The Timber Lights</h3>
+        <button id="checkout-modal-close" class="modal-close-btn" aria-label="Close Checkout">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="checkout-modal-body">
+        
+        <!-- Checkout Form -->
+        <form id="checkout-form" class="checkout-form-section">
+          <h4 class="checkout-subheading">Delivery &amp; Contact Information</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="chk-name">Full Name *</label>
+              <input type="text" id="chk-name" class="form-control" placeholder="Rajesh Sharma" required>
+            </div>
+            <div class="form-group">
+              <label for="chk-phone">Mobile Number *</label>
+              <input type="tel" id="chk-phone" class="form-control" placeholder="+91 93761 77250" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="chk-email">Email Address *</label>
+            <input type="email" id="chk-email" class="form-control" placeholder="rajesh@studio.com" required>
+          </div>
+
+          <div class="form-group">
+            <label for="chk-address">Shipping Address *</label>
+            <input type="text" id="chk-address" class="form-control" placeholder="Flat 402, Green Park Avenue" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="chk-city">City *</label>
+              <input type="text" id="chk-city" class="form-control" placeholder="Ahmedabad" required>
+            </div>
+            <div class="form-group">
+              <label for="chk-state">State *</label>
+              <input type="text" id="chk-state" class="form-control" placeholder="Gujarat" required>
+            </div>
+            <div class="form-group">
+              <label for="chk-pincode">Pincode *</label>
+              <input type="text" id="chk-pincode" class="form-control" placeholder="380007" required>
+            </div>
+          </div>
+
+          <h4 class="checkout-subheading mt-3">Payment Method</h4>
+          <div class="payment-options-list">
+            <label class="payment-radio-label">
+              <input type="radio" name="payment-method" value="upi" checked>
+              <span>UPI / QR Code (Direct Order)</span>
+            </label>
+            <label class="payment-radio-label">
+              <input type="radio" name="payment-method" value="card">
+              <span>Credit / Debit Card</span>
+            </label>
+            <label class="payment-radio-label">
+              <input type="radio" name="payment-method" value="netbanking">
+              <span>Net Banking</span>
+            </label>
+            <label class="payment-radio-label">
+              <input type="radio" name="payment-method" value="cod">
+              <span>Cash on Delivery (COD)</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-full mt-3">Place Order</button>
+        </form>
+
+        <!-- Order Summary Side -->
+        <div class="order-summary-box">
+          <h4>Order Summary</h4>
+          <div id="checkout-items-summary" class="checkout-summary-items">
+            <!-- Rendered dynamically -->
+          </div>
+          <div class="summary-line-row">
+            <span>Subtotal</span>
+            <span id="chk-subtotal">₹0</span>
+          </div>
+          <div class="summary-line-row">
+            <span>Delivery</span>
+            <span class="text-success">FREE</span>
+          </div>
+          <div class="summary-line-row summary-total-row">
+            <span>Final MRP</span>
+            <span id="chk-total" class="text-accent">₹0</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 12. WISHLIST DRAWER MODAL                            -->
+  <!-- ==================================================== -->
+  <div id="wishlist-drawer-modal" class="drawer-modal" aria-hidden="true">
+    <div class="drawer-backdrop" id="wishlist-drawer-backdrop"></div>
+    <div class="drawer-panel">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <i class="fa-solid fa-heart text-accent"></i>
+          <h3>My Wishlist</h3>
+        </div>
+        <button id="wishlist-drawer-close" class="drawer-close-btn" aria-label="Close Wishlist">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="drawer-body" id="wishlist-drawer-items">
+        <!-- Rendered via wishlist.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 13. ACCOUNT / MY ORDERS MODAL                        -->
+  <!-- ==================================================== -->
+  <div id="account-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-container account-modal-container">
+      <div class="modal-header">
+        <h3>My Account &bull; The Timber Lights</h3>
+        <button id="account-modal-close" class="modal-close-btn" aria-label="Close Account">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="account-modal-body">
+        <!-- Rendered via account.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- 14. SEARCH OVERLAY MODAL                             -->
+  <!-- ==================================================== -->
+  <div id="search-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-container search-modal-container">
+      <div class="search-modal-header">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="global-search-input" placeholder="Search by model (e.g. HG1057, KG3058, RK2985)...">
+        <button id="search-modal-close" class="modal-close-btn" aria-label="Close Search">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="search-results-list" id="search-results-list">
+        <!-- Rendered via search.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data/products.js"></script>
+  <script src="js/utils/helpers.js"></script>
+  <script src="js/components/hero-light.js"></script>
+  <script src="js/components/catalog.js"></script>
+  <script src="js/components/product-detail.js"></script>
+  <script src="js/components/cart.js"></script>
+  <script src="js/components/wishlist.js"></script>
+  <script src="js/components/checkout.js"></script>
+  <script src="js/components/search.js"></script>
+  <script src="js/components/account.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+/* ==========================================================================
+   TIMBER LIGHT — RESPONSIVE ADAPTATIONS (css/responsive.css)
+   Clean, lightweight responsive styling for mobile, tablet, and desktop
+   ========================================================================== */
+
+/* Tablet & Mobile (< 992px) */
+@media (max-width: 991px) {
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-toggle-btn {
+    display: block !important;
+  }
+
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-room-card {
+    height: 320px;
+  }
+
+  .categories-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .ttl-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .projects-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .contact-wrap {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .checkout-modal-body {
+    grid-template-columns: 1fr;
+    padding: 1.25rem;
+  }
+
+  .pdp-top-grid, .pdp-bottom-details {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .pdp-layout {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile Small (< 600px) */
+@media (max-width: 600px) {
+  .section {
+    padding: 3rem 0;
+  }
+
+  .hero-title {
+    font-size: 2.1rem;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+
+  .categories-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .ttl-specs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ttl-info-banner {
+    padding: 1.5rem 1rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .card-img-wrap {
+    height: 140px;
+    padding: 0.75rem;
+  }
+
+  .card-content {
+    padding: 0.85rem;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+  }
+
+  .card-price {
+    font-size: 0.95rem;
+  }
+
+  .card-add-btn {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.7rem;
+  }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .drawer-panel {
+    max-width: 100%;
+  }
+
+  .header-container {
+    padding: 0 0.75rem;
+  }
+
+  .nav-3line-btn {
+    padding: 0.35rem 0.65rem;
+    gap: 0.4rem;
+  }
+
+  .nav-3line-btn span {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 1.02rem;
+  }
+
+  .brand-subtag {
+    font-size: 0.52rem;
+    letter-spacing: 0.1em;
+  }
+
+  .logo-mark {
+    width: 24px;
+    height: 12px;
+  }
+
+  .luminaire-beam {
+    width: 16px;
+    height: 3px;
+  }
+}
