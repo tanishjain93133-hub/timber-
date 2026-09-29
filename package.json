@@ -1,6 +1,8 @@
 {
-  "dependencies": {
-    "canvas": "^3.2.3",
-    "pdfjs-dist": "^6.3.289"
+  "name": "timber-lights",
+  "version": "1.0.0",
+  "description": "Timber & Lights - Luxury Wooden Lighting Collection",
+  "scripts": {
+    "start": "node server.js"
   }
 }
