@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | THE TIMBER LIGHTS</title>
+  <meta name="description" content="The page you are looking for does not exist. Explore handcrafted wooden lighting collections at The Timber Lights.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+
+  <style>
+    :root {
+      --bg-dark: #08090b;
+      --bg-card: rgba(22, 24, 29, 0.85);
+      --amber-core: #e5983c;
+      --amber-glow: rgba(229, 152, 60, 0.25);
+      --amber-light: #f6c078;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1c150c 0%, var(--bg-dark) 70%);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Lamp Glow */
+    .lamp-glow {
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 450px;
+      height: 300px;
+      background: radial-gradient(ellipse at center, rgba(229, 152, 60, 0.22) 0%, rgba(229, 152, 60, 0) 70%);
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .error-card {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(229, 152, 60, 0.1);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--amber-light);
+      background: rgba(229, 152, 60, 0.12);
+      border: 1px solid rgba(229, 152, 60, 0.3);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+
+    .error-code {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 14vw, 8rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #ffffff 30%, var(--amber-light) 70%, var(--amber-core) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 4vw, 1.85rem);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .error-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--amber-core), #c47621);
+      color: #0b0c10;
+      border: none;
+      box-shadow: 0 4px 20px rgba(229, 152, 60, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(229, 152, 60, 0.5);
+      background: linear-gradient(135deg, #f5a64b, #d98227);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .quick-links {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .quick-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .quick-links a:hover {
+      color: var(--amber-light);
+    }
+
+    .auto-redirect {
+      margin-top: 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .auto-redirect span {
+      color: var(--amber-core);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="lamp-glow"></div>
+
+  <main class="error-card">
+    <div class="brand-pill">
+      <i class="fa-solid fa-lightbulb"></i> The Timber Lights
+    </div>
+
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-desc">
+      The light fixture or page you are looking for might have been moved, renamed, or is temporarily unavailable. Let's illuminate your path back home.
+    </p>
+
+    <div class="action-group">
+      <a href="index.html" class="btn btn-primary" id="home-btn">
+        <i class="fa-solid fa-house"></i> Return to Home
+      </a>
+      <a href="index.html#shop-section" class="btn btn-secondary">
+        <i class="fa-solid fa-layer-group"></i> Browse Catalog
+      </a>
+      <a href="admin.html" class="btn btn-secondary">
+        <i class="fa-solid fa-lock"></i> Admin Portal
+      </a>
+    </div>
+
+    <div class="quick-links">
+      <a href="index.html#finishes-section"><i class="fa-solid fa-palette"></i> Wood Finishes</a>
+      <a href="index.html#about"><i class="fa-solid fa-shield-halved"></i> Craftsmanship</a>
+      <a href="index.html#contact"><i class="fa-solid fa-phone"></i> Contact Team</a>
+    </div>
+
+    <p class="auto-redirect">
+      Redirecting to homepage in <span id="countdown">8</span>s &bull; <a href="index.html" style="color:var(--text-muted); text-decoration:underline;">Click to go now</a>
+    </p>
+  </main>
+
+  <script>
+    let secondsLeft = 8;
+    const countdownEl = document.getElementById('countdown');
+    const timer = setInterval(() => {
+      secondsLeft -= 1;
+      if (countdownEl) countdownEl.textContent = secondsLeft;
+      if (secondsLeft <= 0) {
+        clearInterval(timer);
+        window.location.href = 'index.html';
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
