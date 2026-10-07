@@ -167,16 +167,28 @@ window.CatalogEngine = (function() {
       <div class="product-card" data-product-id="${product.id}">
         <span class="card-badge">${product.height} HEIGHT</span>
         
-        <button class="card-wishlist-btn ${isWishlisted ? 'active' : ''}" 
-                data-action="toggle-wishlist" 
-                data-id="${product.id}" 
-                aria-label="Save to Wishlist"
-                title="Add to Wishlist">
-          <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-        </button>
+        <div class="card-top-actions">
+          <button class="card-action-icon-btn card-zoom-btn" 
+                  onclick="event.stopPropagation(); ProductDetailEngine.openLightbox('${product.image}', 'MODEL: ${product.model}', '${product.height} Height • 100% Solid ${product.wood}')" 
+                  aria-label="View Full Long Image" 
+                  title="View Full Long Image">
+            <i class="fa-solid fa-expand"></i>
+          </button>
+          <button class="card-action-icon-btn card-wishlist-btn ${isWishlisted ? 'active' : ''}" 
+                  data-action="toggle-wishlist" 
+                  data-id="${product.id}" 
+                  aria-label="Save to Wishlist"
+                  title="Add to Wishlist">
+            <i class="${isWishlisted ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+          </button>
+        </div>
 
-        <div class="card-img-wrap" onclick="ProductDetailEngine.open('${product.id}')">
+        <div class="card-img-wrap" onclick="ProductDetailEngine.open('${product.id}')" title="Click to view full image and specifications">
           <img src="${product.image}" alt="${product.model} Wooden Light" class="card-product-img" onerror="this.onerror=null; this.src='images/products/tl_baluster_finial.jpg'">
+          <div class="card-img-overlay-hint">
+            <i class="fa-solid fa-magnifying-glass-plus"></i>
+            <span>View Full Details &amp; Long Image</span>
+          </div>
         </div>
 
         <div class="card-content">
@@ -199,8 +211,8 @@ window.CatalogEngine = (function() {
               <button class="card-add-btn" onclick="CartEngine.addItem('${product.id}', 1, event)" title="Add to Cart">
                 <i class="fa-solid fa-plus"></i> ADD
               </button>
-              <button class="card-buy-btn" onclick="ProductDetailEngine.open('${product.id}')" title="Buy Now">
-                BUY
+              <button class="card-buy-btn" onclick="ProductDetailEngine.open('${product.id}', true)" title="Buy Now">
+                <i class="fa-solid fa-bolt"></i> BUY NOW
               </button>
             </div>
           </div>

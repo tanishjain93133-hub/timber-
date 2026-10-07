@@ -1,6 +1,6 @@
 /**
- * THE TIMBER LIGHTS — PRODUCT DETAIL (PDP) ENGINE (js/components/product-detail.js)
- * Clean, lightweight product modal with model details, size note, wood polish, coating, and finish options.
+ * THE TIMBER LIGHTS — PRODUCT DETAIL (PDP) & FULL-IMAGE LIGHTBOX ENGINE (js/components/product-detail.js)
+ * High-resolution imagery, full-screen lightbox zoom, and instant Buy Now checkout flow.
  */
 
 window.ProductDetailEngine = (function() {
@@ -15,10 +15,34 @@ window.ProductDetailEngine = (function() {
   let modalBody = null;
   let closeBtn = null;
 
+  // Lightbox elements
+  let lightboxModal = null;
+  let lightboxImg = null;
+  let lightboxTitle = null;
+  let lightboxSpecs = null;
+  let lightboxCloseBtn = null;
+  let lightboxBuyBtn = null;
+  let lightboxZoomInBtn = null;
+  let lightboxZoomOutBtn = null;
+  let lightboxZoomResetBtn = null;
+  let lightboxZoomLevel = null;
+  let currentZoom = 1;
+
   function init() {
     modal = document.getElementById("product-detail-modal");
     modalBody = document.getElementById("product-detail-body");
     closeBtn = document.getElementById("pdp-modal-close");
+
+    lightboxModal = document.getElementById("image-lightbox-modal");
+    lightboxImg = document.getElementById("lightbox-image");
+    lightboxTitle = document.getElementById("lightbox-title");
+    lightboxSpecs = document.getElementById("lightbox-specs");
+    lightboxCloseBtn = document.getElementById("lightbox-close-btn");
+    lightboxBuyBtn = document.getElementById("lightbox-buynow-btn");
+    lightboxZoomInBtn = document.getElementById("lightbox-zoom-in");
+    lightboxZoomOutBtn = document.getElementById("lightbox-zoom-out");
+    lightboxZoomResetBtn = document.getElementById("lightbox-zoom-reset");
+    lightboxZoomLevel = document.getElementById("lightbox-zoom-level");
 
     if (closeBtn) {
       closeBtn.addEventListener("click", close);
@@ -30,14 +54,99 @@ window.ProductDetailEngine = (function() {
       });
     }
 
+    // Lightbox events
+    if (lightboxCloseBtn) {
+      lightboxCloseBtn.addEventListener("click", closeLightbox);
+    }
+
+    if (lightboxModal) {
+      lightboxModal.addEventListener("click", (e) => {
+        if (e.target === lightboxModal) closeLightbox();
+      });
+    }
+
+    if (lightboxZoomInBtn) {
+      lightboxZoomInBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setZoom(currentZoom + 0.25);
+      });
+    }
+
+    if (lightboxZoomOutBtn) {
+      lightboxZoomOutBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setZoom(currentZoom - 0.25);
+      });
+    }
+
+    if (lightboxZoomResetBtn) {
+      lightboxZoomResetBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setZoom(1);
+      });
+    }
+
+    if (lightboxImg) {
+      lightboxImg.addEventListener("dblclick", () => {
+        setZoom(currentZoom > 1 ? 1 : 1.75);
+      });
+    }
+
+    if (lightboxBuyBtn) {
+      lightboxBuyBtn.addEventListener("click", () => {
+        closeLightbox();
+        if (currentProduct) {
+          open(currentProduct.id, true);
+        }
+      });
+    }
+
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal && modal.classList.contains("active")) {
-        close();
+      if (e.key === "Escape") {
+        if (lightboxModal && lightboxModal.classList.contains("active")) {
+          closeLightbox();
+        } else if (modal && modal.classList.contains("active")) {
+          close();
+        }
       }
     });
+
+    // Expose global openLightbox helper
+    window.openProductLightbox = openLightbox;
   }
 
-  function open(productId) {
+  function setZoom(val) {
+    currentZoom = Math.min(Math.max(val, 0.75), 3.0);
+    if (lightboxImg) {
+      lightboxImg.style.transform = `scale(${currentZoom})`;
+    }
+    if (lightboxZoomLevel) {
+      lightboxZoomLevel.textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+  }
+
+  function openLightbox(imgSrc, title, specs) {
+    if (!lightboxModal) return;
+    currentZoom = 1;
+    setZoom(1);
+
+    if (lightboxImg) lightboxImg.src = imgSrc || (currentProduct ? currentProduct.image : '');
+    if (lightboxTitle) lightboxTitle.textContent = title || (currentProduct ? `MODEL: ${currentProduct.model}` : 'The Timber Lights');
+    if (lightboxSpecs) lightboxSpecs.textContent = specs || (currentProduct ? `${currentProduct.height} Height • 100% Solid ${currentProduct.wood}` : 'Premium Wooden Lighting');
+
+    lightboxModal.classList.add("active");
+    lightboxModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeLightbox() {
+    if (lightboxModal) {
+      lightboxModal.classList.remove("active");
+      lightboxModal.setAttribute("aria-hidden", "true");
+      setZoom(1);
+    }
+  }
+
+  function open(productId, autoBuy = false) {
     if (!window.TIMBER_PRODUCTS) return;
     currentProduct = window.TIMBER_PRODUCTS.find(p => p.id === productId);
     if (!currentProduct) return;
@@ -53,6 +162,16 @@ window.ProductDetailEngine = (function() {
       modal.classList.add("active");
       modal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+    }
+
+    if (autoBuy) {
+      setTimeout(() => {
+        const buyBtn = document.getElementById("pdp-buy-now-btn");
+        if (buyBtn) {
+          buyBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          buyBtn.style.animation = 'pulse 1s 2';
+        }
+      }, 150);
     }
   }
 
@@ -90,14 +209,17 @@ window.ProductDetailEngine = (function() {
           
           <!-- Left: Large Product Image -->
           <div class="pdp-gallery">
-            <div class="pdp-main-img-box">
+            <div class="pdp-main-img-box" id="pdp-img-trigger" title="Click to view full screen high-res image">
               <img src="${p.image}" alt="${p.model}" class="pdp-large-img" onerror="this.onerror=null; this.src='images/products/tl_baluster_finial.jpg'">
+              <span class="pdp-zoom-badge">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> Click for Full Image
+              </span>
             </div>
             
             <!-- Wood Grain Swatch Preview -->
             <div class="pdp-wood-swatches-info">
               <div class="swatch-info-title"><i class="fa-solid fa-tree text-accent"></i> 100% Solid Natural Wood</div>
-              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem;">Handcrafted from ${p.wood}. Unique natural grain pattern on every piece.</p>
+              <p style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">Handcrafted from ${p.wood}. Unique natural grain pattern on every piece.</p>
             </div>
           </div>
 
@@ -173,13 +295,14 @@ window.ProductDetailEngine = (function() {
                 <button type="button" class="pdp-qty-btn" id="pdp-qty-inc"><i class="fa-solid fa-plus"></i></button>
               </div>
 
-              <button class="btn btn-primary" id="pdp-add-cart-btn">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span>ADD TO CART</span>
+              <button class="pdp-buy-now-btn" id="pdp-buy-now-btn">
+                <i class="fa-solid fa-bolt"></i>
+                <span>BUY NOW</span>
               </button>
 
-              <button class="btn btn-outline" id="pdp-buy-now-btn">
-                <span>BUY NOW</span>
+              <button class="pdp-add-cart-btn" id="pdp-add-cart-btn">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span>ADD TO CART</span>
               </button>
             </div>
 
@@ -227,6 +350,14 @@ window.ProductDetailEngine = (function() {
   }
 
   function bindPdpEvents() {
+    // Click large image to open full-screen Lightbox
+    const imgTrigger = document.getElementById("pdp-img-trigger");
+    if (imgTrigger && currentProduct) {
+      imgTrigger.addEventListener("click", () => {
+        openLightbox(currentProduct.image, `MODEL: ${currentProduct.model}`, `${currentProduct.height} Height • 100% Solid ${currentProduct.wood}`);
+      });
+    }
+
     // Polish chips
     document.querySelectorAll("#pdp-polish-chips button").forEach(btn => {
       btn.addEventListener("click", () => {
@@ -321,6 +452,8 @@ window.ProductDetailEngine = (function() {
   return {
     init,
     open,
-    close
+    close,
+    openLightbox,
+    closeLightbox
   };
 })();
