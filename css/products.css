@@ -163,6 +163,76 @@
   border-radius: var(--radius-full);
 }
 
+/* Visual Photo Showcase: Real Teak Trees & Artisan Wood Lathe */
+.showcase-visual-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.showcase-visual-card {
+  position: relative;
+  height: 230px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.showcase-visual-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.showcase-visual-card:hover .showcase-visual-img {
+  transform: scale(1.05);
+}
+
+.visual-overlay-content {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.15) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem;
+  color: #FFFFFF;
+}
+
+.visual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #FBBF24;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.visual-bottom-text h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 0.25rem;
+}
+
+.visual-bottom-text p {
+  font-size: 0.78rem;
+  color: #E5E7EB;
+  line-height: 1.35;
+  margin: 0;
+}
+
 .showcase-grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -301,6 +371,12 @@
   .showcase-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .showcase-visual-banner {
+    grid-template-columns: 1fr;
+  }
+  .showcase-visual-card {
+    height: 190px;
   }
   .showcase-grid-4 {
     grid-template-columns: 1fr;
