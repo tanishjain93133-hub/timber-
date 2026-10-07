@@ -165,7 +165,10 @@ window.CatalogEngine = (function() {
 
     return `
       <div class="product-card" data-product-id="${product.id}">
-        <span class="card-badge">${product.height} HEIGHT</span>
+        <div class="card-badges-group">
+          <span class="card-badge"><i class="fa-solid fa-ruler-vertical"></i> ${product.height} HEIGHT</span>
+          <span class="card-material-badge"><i class="fa-solid fa-tree"></i> 100% Ghana Teak</span>
+        </div>
         
         <div class="card-top-actions">
           <button class="card-action-icon-btn card-zoom-btn" 
@@ -185,6 +188,12 @@ window.CatalogEngine = (function() {
 
         <div class="card-img-wrap" onclick="ProductDetailEngine.open('${product.id}')" title="Click to view full image and specifications">
           <img src="${product.image}" alt="${product.model} Wooden Light" class="card-product-img" onerror="this.onerror=null; this.src='images/products/tl_baluster_finial.jpg'">
+          
+          <div class="card-material-pill">
+            <span class="pill-dot"></span>
+            <span>Kiln-Dried Hardwood &bull; Brass Socket</span>
+          </div>
+
           <div class="card-img-overlay-hint">
             <i class="fa-solid fa-magnifying-glass-plus"></i>
             <span>View Full Details &amp; Long Image</span>
@@ -195,8 +204,14 @@ window.CatalogEngine = (function() {
           <div class="card-model-tag">MODEL: ${product.model}</div>
           <h3 class="card-title" onclick="ProductDetailEngine.open('${product.id}')">${product.model}</h3>
           
+          <div class="card-material-tags">
+            <span class="mat-tag"><i class="fa-solid fa-shield-halved"></i> PU Coated</span>
+            <span class="mat-tag"><i class="fa-solid fa-palette"></i> 8 Polishes</span>
+            <span class="mat-tag"><i class="fa-solid fa-certificate"></i> Teak Grade-A</span>
+          </div>
+
           <div class="card-specs-line">
-            <span><strong>Height:</strong> ${product.height}</span>
+            <span><strong>Net Height:</strong> ${product.height}</span>
             <span>&bull;</span>
             <span>${product.wood}</span>
           </div>

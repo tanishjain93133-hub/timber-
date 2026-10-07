@@ -318,20 +318,28 @@ window.ProductDetailEngine = (function() {
             <p style="font-size:0.9rem; color:var(--text-secondary); line-height:1.6; margin-bottom:1rem;">
               Handcrafted designer wooden pendant lighting created from ${p.wood}. Designed to serve as an architectural focal point with warm, balanced illumination. Any finish can be achieved on the selected polish color (Matt, Semi, or Glossy).
             </p>
+            <h4>Material &amp; Craftsmanship Assurance</h4>
+            <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.5rem; font-size:0.84rem; color:var(--text-secondary);">
+              <div><strong style="color:var(--text-main);"><i class="fa-solid fa-tree text-accent"></i> 100% Seasoned Ghana Teak:</strong> Kiln-dried to 8-10% moisture content for zero cracking or warping.</div>
+              <div><strong style="color:var(--text-main);"><i class="fa-solid fa-shield-halved text-accent"></i> Anti-Termite &amp; PU Coating:</strong> Multi-layer protective sealer resisting humidity, UV, and heat.</div>
+              <div><strong style="color:var(--text-main);"><i class="fa-solid fa-bolt text-accent"></i> Heavy-Duty Brass Hardware:</strong> Solid brushed brass E27 socket collar with woven rope suspension cord.</div>
+            </div>
             
-            <h4>Warranty &amp; Craftsmanship</h4>
+            <h4 style="margin-top:1.25rem;">Warranty &amp; Origin</h4>
             <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
-              Includes The Timber Lights 3-Year comprehensive craftsmanship warranty. Designed and manufactured in Ahmedabad, India.
+              Includes The Timber Lights 3-Year comprehensive craftsmanship warranty. Handcrafted and lathe-turned in Ahmedabad, India.
             </p>
           </div>
 
           <div class="pdp-details-block">
-            <h4>Catalog Specifications</h4>
+            <h4>Material &amp; Catalog Specifications</h4>
             <table class="pdp-specs-table">
               <tbody>
                 <tr><th>Model Number</th><td>${p.model}</td></tr>
-                <tr><th>Height</th><td>${p.height}</td></tr>
-                <tr><th>Wood Material</th><td>${p.wood}</td></tr>
+                <tr><th>Net Wood Height</th><td>${p.height}</td></tr>
+                <tr><th>Wood Material &amp; Grade</th><td>${p.wood} (Grade-A Solid Timber)</td></tr>
+                <tr><th>Crafting Method</th><td>Hand-Lathed Spindle &amp; Baluster Turning</td></tr>
+                <tr><th>Hardware Fitting</th><td>Solid Brass E27 Socket &amp; Ceiling Canopy</td></tr>
                 <tr><th>MRP</th><td>${formattedPrice}</td></tr>
                 <tr><th>Selected Polish</th><td id="pdp-table-polish">${selectedPolish}</td></tr>
                 <tr><th>Selected Coating</th><td id="pdp-table-coating">${selectedCoating} (${selectedTone})</td></tr>
