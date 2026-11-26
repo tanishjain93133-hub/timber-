@@ -287,15 +287,31 @@
       return;
     }
 
-    const renderRows = (list) => list.map((o) => `
+    const esc = (str) => String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+
+    const renderRows = (list) => list.map((o) => {
+      const c = o.customer || {};
+      const fullLocation = [c.address, c.city, c.state].filter(Boolean).join(', ') + (c.pincode ? ` - ${c.pincode}` : '');
+      const payLabel = o.payment_method ? String(o.payment_method).toUpperCase() : 'N/A';
+
+      return `
       <tr>
-        <td><strong>${o.order_id}</strong><br><small style="color:var(--adm-text-muted);">${o.date || new Date(o.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</small></td>
+        <td><strong>${esc(o.order_id)}</strong><br><small style="color:var(--adm-text-muted);">${esc(o.date || new Date(o.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }))}</small></td>
         <td>
-          <strong>${o.customer?.name || 'Customer'}</strong><br>
-          <small style="color:var(--adm-text-muted);">${o.customer?.phone || ''} &bull; ${o.customer?.city || ''}</small>
+          <strong>${esc(c.name || 'Customer')}</strong><br>
+          <small style="color:var(--adm-amber-light);">
+            <i class="fa-solid fa-phone" style="font-size:0.65rem;"></i> ${esc(c.phone || '—')}
+            ${c.email ? ` &bull; <a href="mailto:${esc(c.email)}" style="color:var(--adm-amber-light); text-decoration:none;"><i class="fa-solid fa-envelope" style="font-size:0.65rem;"></i> ${esc(c.email)}</a>` : ''}
+          </small><br>
+          <small style="color:var(--adm-text-muted); display:inline-block; margin-top:0.2rem; line-height:1.35;">
+            <i class="fa-solid fa-location-dot" style="font-size:0.65rem;"></i> ${esc(fullLocation || 'Address not provided')}
+          </small>
         </td>
-        <td><small>${(o.items || []).map(i => `${i.qty || i.quantity || 1}x ${i.name} (${i.polish || 'Teak'})`).join('<br>') || 'Timber Light'}</small></td>
-        <td><strong style="color:var(--adm-amber-light);">₹${Number(o.totals?.finalTotal || 0).toLocaleString('en-IN')}</strong></td>
+        <td><small>${(o.items || []).map(i => `${i.qty || i.quantity || 1}x ${esc(i.name)} (${esc(i.polish || 'Teak')}${i.coating ? ', ' + esc(i.coating) : ''})`).join('<br>') || 'Timber Light'}</small></td>
+        <td>
+          <strong style="color:var(--adm-amber-light);">₹${Number(o.totals?.finalTotal || 0).toLocaleString('en-IN')}</strong><br>
+          <small style="color:var(--adm-text-muted); text-transform:uppercase; font-size:0.68rem;">${esc(payLabel)}</small>
+        </td>
         <td>
           <select class="admin-form-select" style="padding:0.3rem 0.5rem; font-size:0.75rem;" onchange="window.AdminApp.changeOrderStatus('${o.id}', this.value)">
             <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
@@ -305,7 +321,7 @@
           </select>
         </td>
       </tr>
-    `).join('');
+    `; }).join('');
 
     if (tbody) tbody.innerHTML = renderRows(orders);
     if (dashTbody) dashTbody.innerHTML = renderRows(orders.slice(0, 5));
