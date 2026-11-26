@@ -446,7 +446,8 @@ window.ProductDetailEngine = (function() {
           CartEngine.addItem(currentProduct.id, quantity, e, {
             polish: selectedPolish,
             coating: selectedCoating,
-            tone: selectedTone
+            tone: selectedTone,
+            silent: true
           });
           close();
           if (window.CheckoutEngine) {

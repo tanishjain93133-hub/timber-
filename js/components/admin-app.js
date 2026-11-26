@@ -1,349 +1,289 @@
 /**
- * THE TIMBER LIGHTS — MASTER ADMIN APPLICATION SCRIPT (js/components/admin-app.js)
- * Full control engine for Catalog, Stock, Orders, Inquiries, Site Settings, and Authentication
+ * THE TIMBER LIGHTS — MASTER ADMIN APPLICATION (js/components/admin-app.js)
+ * Full control engine: Supabase-backed Catalog, Orders, Leads, Site Settings, Live Queries
  */
 
-(function() {
+(function () {
   'use strict';
 
-  // Default credentials
-  const DEFAULT_ADMIN = {
-    user: "admin",
-    pass: "timber2026"
-  };
+  // ───────────────────────────────────────────────────────
+  // CONSTANTS
+  // ───────────────────────────────────────────────────────
+  const DEFAULT_ADMIN = { user: 'admin', pass: 'timber2026' };
 
-  // State
+  // ───────────────────────────────────────────────────────
+  // STATE
+  // ───────────────────────────────────────────────────────
   let isAuthenticated = false;
-  let currentTab = "dashboard";
+  let currentTab = 'dashboard';
+  let realtimeSubs = [];
+  let liveQueriesData = [];
 
-  // Cache Elements
-  const loginWrapper = document.getElementById("admin-login-wrapper");
-  const loginForm = document.getElementById("admin-login-form");
-  const loginUser = document.getElementById("admin-user-input");
-  const loginPass = document.getElementById("admin-pass-input");
-  const loginError = document.getElementById("admin-login-error");
+  // ───────────────────────────────────────────────────────
+  // DOM CACHE
+  // ───────────────────────────────────────────────────────
+  const loginWrapper = document.getElementById('admin-login-wrapper');
+  const loginForm    = document.getElementById('admin-login-form');
+  const loginUser    = document.getElementById('admin-user-input');
+  const loginPass    = document.getElementById('admin-pass-input');
+  const loginError   = document.getElementById('admin-login-error');
+  const appRoot      = document.getElementById('admin-app-root');
+  const navTabs      = document.querySelectorAll('.admin-nav-item');
+  const panes        = document.querySelectorAll('.admin-pane');
+  const paneTitle    = document.getElementById('current-pane-title');
+  const sidebar      = document.getElementById('admin-sidebar');
+  const mobileToggle = document.getElementById('admin-mobile-toggle');
+  const prodModal    = document.getElementById('product-edit-modal');
+  const prodModalClose = document.getElementById('product-modal-close');
+  const prodForm     = document.getElementById('product-edit-form');
+  const settingsForm = document.getElementById('site-settings-form');
+  const pwdForm      = document.getElementById('change-password-form');
 
-  const appRoot = document.getElementById("admin-app-root");
-  const navTabs = document.querySelectorAll(".admin-nav-item");
-  const panes = document.querySelectorAll(".admin-pane");
-  const paneTitle = document.getElementById("current-pane-title");
+  // ───────────────────────────────────────────────────────
+  // DB HELPER (wait until SupabaseDB is ready)
+  // ───────────────────────────────────────────────────────
+  function db() { return window.SupabaseDB; }
 
-  // Mobile sidebar
-  const sidebar = document.getElementById("admin-sidebar");
-  const mobileToggle = document.getElementById("admin-mobile-toggle");
-
-  // Product modal elements
-  const prodModal = document.getElementById("product-edit-modal");
-  const prodModalClose = document.getElementById("product-modal-close");
-  const prodForm = document.getElementById("product-edit-form");
-
-  // Settings elements
-  const settingsForm = document.getElementById("site-settings-form");
-  const pwdForm = document.getElementById("change-password-form");
-
-  // Initialize
-  function init() {
-    checkAuthSession();
-    attachEvents();
-    if (isAuthenticated) {
-      loadAllData();
-    }
-  }
-
-  function getStoredCredentials() {
-    try {
-      const stored = localStorage.getItem("timber_admin_creds");
-      return stored ? JSON.parse(stored) : DEFAULT_ADMIN;
-    } catch(e) {
-      return DEFAULT_ADMIN;
-    }
-  }
-
+  // ───────────────────────────────────────────────────────
+  // AUTH (Supabase Auth JWT)
+  // ───────────────────────────────────────────────────────
   function checkAuthSession() {
-    const sessionToken = sessionStorage.getItem("timber_admin_auth");
-    if (sessionToken === "true") {
-      isAuthenticated = true;
-      showApp();
-    } else {
-      isAuthenticated = false;
-      showLogin();
-    }
+    if (db() && db().isAuthenticated()) {
+      isAuthenticated = true; showApp();
+    } else { showLogin(); }
   }
 
   function showLogin() {
-    if (loginWrapper) loginWrapper.style.display = "flex";
-    if (appRoot) appRoot.style.display = "none";
+    if (loginWrapper) loginWrapper.style.display = 'flex';
+    if (appRoot) appRoot.style.display = 'none';
   }
 
   function showApp() {
-    if (loginWrapper) loginWrapper.style.display = "none";
-    if (appRoot) appRoot.style.display = "flex";
+    if (loginWrapper) loginWrapper.style.display = 'none';
+    if (appRoot) appRoot.style.display = 'flex';
     loadAllData();
+    startRealtimeSubscriptions();
   }
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     const u = loginUser.value.trim();
     const p = loginPass.value.trim();
-    const creds = getStoredCredentials();
+    const btn = loginForm ? loginForm.querySelector('[type="submit"]') : null;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span>Signing in...</span> <i class="fa-solid fa-spinner fa-spin"></i>'; }
 
-    if (u === creds.user && p === creds.pass) {
+    const res = await db().signIn(u, p);
+    if (btn) { btn.disabled = false; btn.innerHTML = '<span>Sign In to Admin Workspace</span> <i class="fa-solid fa-arrow-right"></i>'; }
+
+    if (res && res.ok) {
       isAuthenticated = true;
-      sessionStorage.setItem("timber_admin_auth", "true");
-      if (loginError) loginError.style.display = "none";
+      if (loginError) loginError.style.display = 'none';
       showApp();
     } else {
       if (loginError) {
-        loginError.textContent = "Invalid username or password. Please try again.";
-        loginError.style.display = "block";
+        loginError.textContent = (res && res.error) ? res.error : 'Invalid username or password.';
+        loginError.style.display = 'block';
       }
     }
   }
 
-  function handleLogout() {
-    sessionStorage.removeItem("timber_admin_auth");
+  async function handleLogout() {
+    realtimeSubs.forEach(s => s && s.close && s.close());
+    realtimeSubs = [];
+    if (db() && db().signOut) await db().signOut();
     isAuthenticated = false;
     showLogin();
   }
 
+  // ───────────────────────────────────────────────────────
+  // EVENTS
+  // ───────────────────────────────────────────────────────
   function attachEvents() {
-    if (loginForm) loginForm.addEventListener("submit", handleLogin);
+    if (loginForm) loginForm.addEventListener('submit', handleLogin);
+    document.querySelectorAll('.admin-logout-btn').forEach(b => b.addEventListener('click', handleLogout));
+    navTabs.forEach(t => t.addEventListener('click', () => switchTab(t.getAttribute('data-tab'))));
+    if (mobileToggle) mobileToggle.addEventListener('click', () => sidebar && sidebar.classList.toggle('mobile-open'));
+    if (prodModalClose) prodModalClose.addEventListener('click', () => prodModal && prodModal.classList.remove('active'));
+    if (prodForm) prodForm.addEventListener('submit', saveProduct);
+    if (settingsForm) settingsForm.addEventListener('submit', saveSiteSettings);
+    if (pwdForm) pwdForm.addEventListener('submit', changePassword);
 
-    document.querySelectorAll(".admin-logout-btn").forEach(btn => {
-      btn.addEventListener("click", handleLogout);
-    });
-
-    navTabs.forEach(tab => {
-      tab.addEventListener("click", () => {
-        const tabName = tab.getAttribute("data-tab");
-        switchTab(tabName);
-      });
-    });
-
-    if (mobileToggle) {
-      mobileToggle.addEventListener("click", () => {
-        if (sidebar) sidebar.classList.toggle("mobile-open");
-      });
-    }
-
-    // Modal close
-    if (prodModalClose) {
-      prodModalClose.addEventListener("click", () => {
-        if (prodModal) prodModal.classList.remove("active");
-      });
-    }
-
-    if (prodForm) prodForm.addEventListener("submit", saveProduct);
-    if (settingsForm) settingsForm.addEventListener("submit", saveSiteSettings);
-    if (pwdForm) pwdForm.addEventListener("submit", changePassword);
-
-    // Search bar
-    const searchInput = document.getElementById("admin-product-search");
-    if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        renderProductsTable(e.target.value.toLowerCase());
-      });
-    }
-
-    // Add product trigger
-    const addBtn = document.getElementById("btn-add-product");
-    if (addBtn) {
-      addBtn.addEventListener("click", () => openProductModal(null));
-    }
+    const searchInput = document.getElementById('admin-product-search');
+    if (searchInput) searchInput.addEventListener('input', (e) => renderProductsTable(e.target.value.toLowerCase()));
+    const addBtn = document.getElementById('btn-add-product');
+    if (addBtn) addBtn.addEventListener('click', () => openProductModal(null));
   }
 
   function switchTab(tabName) {
     currentTab = tabName;
-    navTabs.forEach(t => t.classList.toggle("active", t.getAttribute("data-tab") === tabName));
-    panes.forEach(p => p.classList.toggle("active", p.id === `pane-${tabName}`));
-
+    navTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tabName));
+    panes.forEach(p => p.classList.toggle('active', p.id === `pane-${tabName}`));
     const titles = {
-      "dashboard": "Executive Dashboard",
-      "products": "Catalog & Product Management",
-      "orders": "Customer Orders & Deliveries",
-      "leads": "Architectural Consultation Leads",
-      "settings": "Storefront Content & Hero Settings",
-      "security": "Admin Credentials & Security"
+      dashboard: 'Executive Dashboard', products: 'Catalog & Product Management',
+      orders: 'Customer Orders & Deliveries', leads: 'Consultation Leads',
+      settings: 'Storefront Content & Hero Settings', security: 'Admin Credentials & Security',
+      livedata: 'Live User Activity'
     };
-
-    if (paneTitle) paneTitle.textContent = titles[tabName] || "Control Panel";
-    if (sidebar) sidebar.classList.remove("mobile-open");
+    if (paneTitle) paneTitle.textContent = titles[tabName] || 'Control Panel';
+    if (sidebar) sidebar.classList.remove('mobile-open');
   }
 
-  // --- DATA MANAGEMENT ---
-  function getProducts() {
+  // ───────────────────────────────────────────────────────
+  // LOAD ALL DATA FROM SUPABASE
+  // ───────────────────────────────────────────────────────
+  async function loadAllData() {
+    showLoadingKPIs();
     try {
-      const stored = localStorage.getItem("timber_products_v2");
-      if (stored) return JSON.parse(stored);
-      if (window.TIMBER_PRODUCTS) {
-        localStorage.setItem("timber_products_v2", JSON.stringify(window.TIMBER_PRODUCTS));
-        return window.TIMBER_PRODUCTS;
-      }
-      return [];
-    } catch(e) {
-      return window.TIMBER_PRODUCTS || [];
+      await Promise.all([
+        renderKPIs(),
+        renderProductsTable(),
+        renderOrdersTable(),
+        renderLeadsTable(),
+        populateSiteSettings()
+      ]);
+    } catch (e) {
+      console.error('loadAllData error:', e);
     }
   }
 
-  function saveProducts(prods) {
-    localStorage.setItem("timber_products_v2", JSON.stringify(prods));
-    window.TIMBER_PRODUCTS = prods;
-    loadAllData();
+  function showLoadingKPIs() {
+    ['kpi-total-revenue','kpi-total-orders','kpi-total-products','kpi-total-leads'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = '<span class="kpi-loading">Loading...</span>';
+    });
   }
 
-  function getOrders() {
-    try {
-      const stored = localStorage.getItem("timber_all_orders_v1");
-      if (stored) return JSON.parse(stored);
-      // Sample defaults
-      const sampleOrders = [
-        {
-          orderId: "TL-2026-9041",
-          date: "29 Sep 2026",
-          status: "Confirmed",
-          customer: { name: "Ar. Rohan Varma", phone: "+91 98201 55432", email: "rohan@varma-architects.com", city: "Mumbai, MH" },
-          items: [{ name: "TL-BAL18 Baluster Finial Pendant", qty: 2, polish: "Walnut", coating: "PU Matt", price: 19500 }],
-          totals: { finalTotal: 39000 }
-        },
-        {
-          orderId: "TL-2026-8812",
-          date: "27 Sep 2026",
-          status: "In Assembly",
-          customer: { name: "Meera Sen (Villa 14)", phone: "+91 99340 11289", email: "meera.sen@gmail.com", city: "Bengaluru, KA" },
-          items: [{ name: "TL-WBD20 Walnut Totem Pendant", qty: 4, polish: "Teak", coating: "Melamine Semi", price: 22000 }],
-          totals: { finalTotal: 88000 }
-        },
-        {
-          orderId: "TL-2026-7640",
-          date: "25 Sep 2026",
-          status: "Dispatched",
-          customer: { name: "Studio Matrix Design", phone: "+91 98110 44321", email: "matrix@designstudio.in", city: "New Delhi, DL" },
-          items: [{ name: "TL-CHAN54 Slotted Linear Beam", qty: 1, polish: "Oak", coating: "PU Glossy", price: 34500 }],
-          totals: { finalTotal: 34500 }
-        }
-      ];
-      localStorage.setItem("timber_all_orders_v1", JSON.stringify(sampleOrders));
-      return sampleOrders;
-    } catch(e) {
-      return [];
-    }
+  // ───────────────────────────────────────────────────────
+  // KPI DASHBOARD
+  // ───────────────────────────────────────────────────────
+  async function renderKPIs() {
+    const [products, orders, leads] = await Promise.all([
+      db().select('products'),
+      db().select('orders'),
+      db().select('leads')
+    ]);
+
+    const totalRev = orders.reduce((s, o) => s + (o.totals?.finalTotal || 0), 0);
+    const activeOrders = orders.filter(o => o.status === 'Confirmed' || o.status === 'In Assembly').length;
+
+    const elRev    = document.getElementById('kpi-total-revenue');
+    const elOrders = document.getElementById('kpi-total-orders');
+    const elProds  = document.getElementById('kpi-total-products');
+    const elLeads  = document.getElementById('kpi-total-leads');
+
+    if (elRev)    elRev.textContent    = `₹${totalRev.toLocaleString('en-IN')}`;
+    if (elOrders) elOrders.textContent = `${orders.length} (${activeOrders} Active)`;
+    if (elProds)  elProds.textContent  = `${products.length} Models`;
+    if (elLeads)  elLeads.textContent  = `${leads.length} Enquiries`;
   }
 
-  function getLeads() {
-    try {
-      const stored = localStorage.getItem("timber_consult_leads");
-      if (stored) return JSON.parse(stored);
-      const sampleLeads = [
-        { name: "Ananya Mehta", phone: "+91 94250 88712", email: "ananya@mehta-interiors.com", date: "29 Sep 2026", message: "Need Ghana Teak hanging lights for 5 luxury penthouses in Ahmedabad." },
-        { name: "Vikramaditya Singhania", phone: "+91 98210 33499", email: "vikram@singhaniagroup.in", date: "28 Sep 2026", message: "Enquiry for customized 54-inch linear beam for hotel reception." }
-      ];
-      localStorage.setItem("timber_consult_leads", JSON.stringify(sampleLeads));
-      return sampleLeads;
-    } catch(e) {
-      return [];
-    }
-  }
-
-  function getSiteSettings() {
-    try {
-      const stored = localStorage.getItem("timber_site_settings");
-      if (stored) return JSON.parse(stored);
-      const defaults = {
-        heroTitle: "The Timber Lights",
-        heroTagline: "Architectural Handcrafted Wooden Lighting • Collection 2026",
-        phone: "+91 9376177250",
-        email: "thetimberlight@gmail.com",
-        address: "Paldi, Ahmedabad, Gujarat, India",
-        bannerText: "Collection 2026 • 25 Signature Ghanaian Teak Wood Lighting Fixtures"
-      };
-      localStorage.setItem("timber_site_settings", JSON.stringify(defaults));
-      return defaults;
-    } catch(e) {
-      return {};
-    }
-  }
-
-  function loadAllData() {
-    renderKPIs();
-    renderProductsTable();
-    renderOrdersTable();
-    renderLeadsTable();
-    populateSiteSettings();
-  }
-
-  function renderKPIs() {
-    const prods = getProducts();
-    const orders = getOrders();
-    const leads = getLeads();
-
-    const totalRev = orders.reduce((sum, o) => sum + (o.totals?.finalTotal || 0), 0);
-    const activeProds = prods.length;
-    const pendingOrders = orders.filter(o => o.status === 'Confirmed' || o.status === 'In Assembly').length;
-
-    const elRev = document.getElementById("kpi-total-revenue");
-    const elOrders = document.getElementById("kpi-total-orders");
-    const elProds = document.getElementById("kpi-total-products");
-    const elLeads = document.getElementById("kpi-total-leads");
-
-    if (elRev) elRev.textContent = `₹${totalRev.toLocaleString('en-IN')}`;
-    if (elOrders) elOrders.textContent = `${orders.length} (${pendingOrders} Active)`;
-    if (elProds) elProds.textContent = `${activeProds} Models`;
-    if (elLeads) elLeads.textContent = `${leads.length} Enquiries`;
-  }
-
-  function renderProductsTable(filterQuery = "") {
-    const tbody = document.getElementById("admin-products-tbody");
+  // ───────────────────────────────────────────────────────
+  // PRODUCTS
+  // ───────────────────────────────────────────────────────
+  async function renderProductsTable(filterQuery = '') {
+    const tbody = document.getElementById('admin-products-tbody');
     if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color:var(--adm-text-muted); padding:2rem;">Loading products from Supabase...</td></tr>`;
 
-    let prods = getProducts();
+    let prods = await db().select('products', { order: 'created_at.asc' });
+
+    // If no products in DB yet, seed from local JS data
+    if (prods.length === 0 && window.TIMBER_PRODUCTS && window.TIMBER_PRODUCTS.length > 0) {
+      await seedProductsToDB();
+      prods = await db().select('products', { order: 'created_at.asc' });
+    }
+
     if (filterQuery) {
-      prods = prods.filter(p => 
-        (p.name && p.name.toLowerCase().includes(filterQuery)) ||
+      prods = prods.filter(p =>
+        (p.name  && p.name.toLowerCase().includes(filterQuery)) ||
         (p.model && p.model.toLowerCase().includes(filterQuery)) ||
-        (p.wood && p.wood.toLowerCase().includes(filterQuery))
+        (p.wood  && p.wood.toLowerCase().includes(filterQuery))
       );
     }
 
-    tbody.innerHTML = prods.map((p, idx) => `
+    if (prods.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color:var(--adm-text-muted); padding:2rem;">No products found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = prods.map((p) => `
       <tr>
         <td>
           <div class="product-cell">
             <img src="${p.image || 'images/products/tl_baluster_finial.jpg'}" alt="${p.model}" class="product-cell-thumb" onerror="this.src='images/hero_timber_dining.png'">
             <div>
-              <span class="product-cell-name">${p.name.split('—')[1] || p.name}</span>
-              <span class="product-cell-sku">Model: <strong>${p.model || 'TL-' + idx}</strong> &bull; Height: ${p.height || '18"'}</span>
+              <span class="product-cell-name">${(p.name || '').split('—')[1] || p.name}</span>
+              <span class="product-cell-sku">Model: <strong>${p.model || p.id}</strong> &bull; Height: ${p.height || '18"'}</span>
             </div>
           </div>
         </td>
         <td><span class="status-pill confirmed">Ghana Teak</span></td>
-        <td><strong style="color:var(--adm-amber-light);">₹${Number(p.price).toLocaleString('en-IN')}</strong></td>
-        <td><span class="status-pill ${p.stock > 10 ? 'delivered' : 'pending'}">${p.stock || 20} in stock</span></td>
+        <td><strong style="color:var(--adm-amber-light);">₹${Number(p.price || 0).toLocaleString('en-IN')}</strong></td>
+        <td><span class="status-pill ${(p.stock || 0) > 10 ? 'delivered' : 'pending'}">${p.stock || 20} in stock</span></td>
         <td>
-          <button class="action-icon-btn" onclick="window.AdminApp.editProduct('${p.id}')" title="Edit Model"><i class="fa-solid fa-pen-to-square"></i></button>
-          <button class="action-icon-btn btn-delete" onclick="window.AdminApp.deleteProduct('${p.id}')" title="Delete Model"><i class="fa-solid fa-trash"></i></button>
+          <button class="action-icon-btn" onclick="window.AdminApp.editProduct('${p.id}')" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button class="action-icon-btn btn-delete" onclick="window.AdminApp.deleteProduct('${p.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
         </td>
       </tr>
-    `).join("");
+    `).join('');
   }
 
-  function renderOrdersTable() {
-    const tbody = document.getElementById("admin-orders-tbody");
-    if (!tbody) return;
+  async function seedProductsToDB() {
+    const products = window.TIMBER_PRODUCTS || [];
+    if (!products.length) return;
+    // Upsert all products
+    for (const p of products) {
+      await db().upsert('products', {
+        id: p.id,
+        model: p.model,
+        name: p.name,
+        height: p.height,
+        wood: p.wood || 'Premium Ghana Teak Wood',
+        price: p.price,
+        price_unit: p.priceUnit || 'MRP (Incl. of all taxes)',
+        category: p.category || 'hanging',
+        category_label: p.categoryLabel || 'Wooden Hanging Light',
+        image: p.image || '',
+        page: p.page || 1,
+        is_featured: p.isFeatured !== false,
+        stock: p.stock || 20,
+        rating: p.rating || 5,
+        reviews_count: p.reviewsCount || 30,
+        size_note: p.sizeNote || 'Size mentioned is net wood size. Bulb will be as per actual.',
+        short_desc: p.shortDesc || '',
+        features: p.features || [],
+        specifications: p.specifications || {}
+      }, 'id');
+    }
+    console.log('[Admin] Seeded', products.length, 'products to Supabase');
+  }
 
-    const orders = getOrders();
+  // ───────────────────────────────────────────────────────
+  // ORDERS
+  // ───────────────────────────────────────────────────────
+  async function renderOrdersTable() {
+    const tbody = document.getElementById('admin-orders-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">Loading orders...</td></tr>`;
+
+    let orders = await db().select('orders', { order: 'created_at.desc' });
+
+    if (orders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">No orders yet. Orders from the checkout form will appear here live.</td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = orders.map((o, idx) => `
       <tr>
-        <td><strong>${o.orderId}</strong><br><small style="color:var(--adm-text-muted);">${o.date}</small></td>
+        <td><strong>${o.order_id}</strong><br><small style="color:var(--adm-text-muted);">${o.date || new Date(o.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</small></td>
         <td>
           <strong>${o.customer?.name || 'Customer'}</strong><br>
           <small style="color:var(--adm-text-muted);">${o.customer?.phone || ''} &bull; ${o.customer?.city || ''}</small>
         </td>
-        <td>
-          <small>${o.items?.map(i => `${i.qty}x ${i.name} (${i.polish || 'Teak'})`).join('<br>') || 'Timber Light'}</small>
-        </td>
+        <td><small>${(o.items || []).map(i => `${i.qty || i.quantity || 1}x ${i.name} (${i.polish || 'Teak'})`).join('<br>') || 'Timber Light'}</small></td>
         <td><strong style="color:var(--adm-amber-light);">₹${Number(o.totals?.finalTotal || 0).toLocaleString('en-IN')}</strong></td>
         <td>
-          <select class="admin-form-select" style="padding:0.3rem 0.5rem; font-size:0.75rem;" onchange="window.AdminApp.changeOrderStatus(${idx}, this.value)">
+          <select class="admin-form-select" style="padding:0.3rem 0.5rem; font-size:0.75rem;" onchange="window.AdminApp.changeOrderStatus('${o.id}', this.value)">
             <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
             <option value="In Assembly" ${o.status === 'In Assembly' ? 'selected' : ''}>In Assembly</option>
             <option value="Dispatched" ${o.status === 'Dispatched' ? 'selected' : ''}>Dispatched</option>
@@ -351,184 +291,365 @@
           </select>
         </td>
       </tr>
-    `).join("");
+    `).join('');
   }
 
-  function renderLeadsTable() {
-    const tbody = document.getElementById("admin-leads-tbody");
-    if (!tbody) return;
+  async function changeOrderStatus(orderId, newStatus) {
+    await db().update('orders', `id=eq.${orderId}`, { status: newStatus, updated_at: new Date().toISOString() });
+    renderOrdersTable();
+    renderKPIs();
+  }
 
-    const leads = getLeads();
+  // ───────────────────────────────────────────────────────
+  // LEADS
+  // ───────────────────────────────────────────────────────
+  async function renderLeadsTable() {
+    const tbody = document.getElementById('admin-leads-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">Loading enquiries...</td></tr>`;
+
+    const leads = await db().select('leads', { order: 'created_at.desc' });
+
+    if (leads.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">No enquiries yet. Contact form submissions will appear here live.</td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = leads.map(l => `
       <tr>
-        <td><strong>${l.name}</strong><br><small style="color:var(--adm-text-muted);">${l.date || 'Recent'}</small></td>
-        <td><a href="tel:${l.phone}" style="color:var(--adm-amber-light); text-decoration:none;">${l.phone}</a><br><small style="color:var(--adm-text-muted);">${l.email}</small></td>
+        <td><strong>${l.name}</strong><br><small style="color:var(--adm-text-muted);">${new Date(l.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</small></td>
+        <td><a href="tel:${l.phone}" style="color:var(--adm-amber-light); text-decoration:none;">${l.phone || '—'}</a><br><small style="color:var(--adm-text-muted);">${l.email || ''}</small></td>
         <td><p style="font-size:0.82rem; line-height:1.4; color:var(--adm-text);">${l.message || 'Consultation requested'}</p></td>
-        <td><span class="status-pill delivered">Active Lead</span></td>
+        <td>
+          <span class="status-pill delivered">Active Lead</span>
+          <button class="action-icon-btn btn-delete" style="margin-top:0.3rem;" onclick="window.AdminApp.deleteLead('${l.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+        </td>
       </tr>
-    `).join("");
+    `).join('');
   }
 
-  function populateSiteSettings() {
-    const s = getSiteSettings();
-    if (document.getElementById("set-hero-title")) document.getElementById("set-hero-title").value = s.heroTitle || "";
-    if (document.getElementById("set-hero-tagline")) document.getElementById("set-hero-tagline").value = s.heroTagline || "";
-    if (document.getElementById("set-phone")) document.getElementById("set-phone").value = s.phone || "";
-    if (document.getElementById("set-email")) document.getElementById("set-email").value = s.email || "";
-    if (document.getElementById("set-address")) document.getElementById("set-address").value = s.address || "";
-    if (document.getElementById("set-banner")) document.getElementById("set-banner").value = s.bannerText || "";
+  async function deleteLead(id) {
+    if (!confirm('Remove this lead?')) return;
+    await db().del('leads', `id=eq.${id}`);
+    renderLeadsTable();
+    renderKPIs();
   }
 
-  function saveSiteSettings(e) {
+  // ───────────────────────────────────────────────────────
+  // SITE SETTINGS
+  // ───────────────────────────────────────────────────────
+  async function populateSiteSettings() {
+    const rows = await db().select('site_settings', { filter: 'id=eq.1' });
+    const s = rows[0] || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    set('set-hero-title',   s.hero_title   || 'The Timber Lights');
+    set('set-hero-tagline', s.hero_tagline || 'Architectural Handcrafted Wooden Lighting • Collection 2026');
+    set('set-phone',        s.phone        || '+91 9376177250');
+    set('set-email',        s.email        || 'thetimberlight@gmail.com');
+    set('set-address',      s.address      || 'Paldi, Ahmedabad, Gujarat, India');
+    set('set-banner',       s.banner_text  || '');
+  }
+
+  async function saveSiteSettings(e) {
     e.preventDefault();
+    const btn = e.target.querySelector('[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; }
+
     const updated = {
-      heroTitle: document.getElementById("set-hero-title").value.trim(),
-      heroTagline: document.getElementById("set-hero-tagline").value.trim(),
-      phone: document.getElementById("set-phone").value.trim(),
-      email: document.getElementById("set-email").value.trim(),
-      address: document.getElementById("set-address").value.trim(),
-      bannerText: document.getElementById("set-banner").value.trim()
+      hero_title:   document.getElementById('set-hero-title')?.value.trim(),
+      hero_tagline: document.getElementById('set-hero-tagline')?.value.trim(),
+      phone:        document.getElementById('set-phone')?.value.trim(),
+      email:        document.getElementById('set-email')?.value.trim(),
+      address:      document.getElementById('set-address')?.value.trim(),
+      banner_text:  document.getElementById('set-banner')?.value.trim(),
+      updated_at:   new Date().toISOString()
     };
-    localStorage.setItem("timber_site_settings", JSON.stringify(updated));
-    alert("Site Settings saved successfully! Changes are live on the storefront.");
+
+    await db().update('site_settings', 'id=eq.1', updated);
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save & Apply Live to Website'; }
+    showAdminToast('Site settings saved to Supabase! Live on storefront. ✓', 'success');
   }
 
-  function changePassword(e) {
+  // ───────────────────────────────────────────────────────
+  // PASSWORD CHANGE (Supabase Auth)
+  // ───────────────────────────────────────────────────────
+  async function changePassword(e) {
     e.preventDefault();
-    const oldP = document.getElementById("pwd-current").value.trim();
-    const newP = document.getElementById("pwd-new").value.trim();
-    const creds = getStoredCredentials();
-
-    if (oldP !== creds.pass) {
-      alert("Current password does not match.");
+    const newP = document.getElementById('pwd-new')?.value.trim();
+    if (!newP || newP.length < 6) {
+      showAdminToast('New password must be at least 6 characters.', 'danger');
       return;
     }
-    if (newP.length < 4) {
-      alert("New password must be at least 4 characters.");
-      return;
-    }
+    const btn = e.target.querySelector('[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...'; }
 
-    creds.pass = newP;
-    localStorage.setItem("timber_admin_creds", JSON.stringify(creds));
-    alert("Admin password updated successfully!");
-    e.target.reset();
+    const res = await db().updatePassword(newP);
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-key"></i> Update Password'; }
+
+    if (res && res.ok) {
+      showAdminToast('Supabase Auth password updated successfully! ✓', 'success');
+      e.target.reset();
+    } else {
+      showAdminToast((res && res.error) || 'Failed to update password.', 'danger');
+    }
   }
 
-  function openProductModal(prodId) {
-    const prods = getProducts();
-    const modalTitle = document.getElementById("modal-product-title");
-
+  // ───────────────────────────────────────────────────────
+  // PRODUCT MODAL (EDIT / CREATE)
+  // ───────────────────────────────────────────────────────
+  async function openProductModal(prodId) {
+    const modalTitle = document.getElementById('modal-product-title');
     if (prodId) {
-      const p = prods.find(item => item.id === prodId);
+      const rows = await db().select('products', { filter: `id=eq.${prodId}` });
+      const p = rows[0];
       if (!p) return;
       if (modalTitle) modalTitle.textContent = `Edit Model: ${p.model}`;
-      document.getElementById("edit-prod-id").value = p.id;
-      document.getElementById("edit-prod-model").value = p.model || "";
-      document.getElementById("edit-prod-name").value = p.name || "";
-      document.getElementById("edit-prod-height").value = p.height || "18\"";
-      document.getElementById("edit-prod-price").value = p.price || 19500;
-      document.getElementById("edit-prod-stock").value = p.stock || 20;
-      document.getElementById("edit-prod-image").value = p.image || "";
-      document.getElementById("edit-prod-desc").value = p.shortDesc || "";
+      document.getElementById('edit-prod-id').value    = p.id;
+      document.getElementById('edit-prod-model').value = p.model || '';
+      document.getElementById('edit-prod-name').value  = p.name  || '';
+      document.getElementById('edit-prod-height').value = p.height || '18"';
+      document.getElementById('edit-prod-price').value  = p.price  || 19500;
+      document.getElementById('edit-prod-stock').value  = p.stock  || 20;
+      document.getElementById('edit-prod-image').value  = p.image  || '';
+      document.getElementById('edit-prod-desc').value   = p.short_desc || '';
     } else {
-      if (modalTitle) modalTitle.textContent = "Add New Timber Light Model";
-      document.getElementById("edit-prod-id").value = "tl_custom_" + Date.now().toString(36);
-      document.getElementById("edit-prod-model").value = "TL-NEW" + Math.floor(Math.random() * 90 + 10);
-      document.getElementById("edit-prod-name").value = "The Timber Lights — Architectural Pendant";
-      document.getElementById("edit-prod-height").value = "20\"";
-      document.getElementById("edit-prod-price").value = "21000";
-      document.getElementById("edit-prod-stock").value = "15";
-      document.getElementById("edit-prod-image").value = "images/products/tl_baluster_finial.jpg";
-      document.getElementById("edit-prod-desc").value = "Handcrafted Solid Ghana Teak Wood signature hanging light.";
+      if (modalTitle) modalTitle.textContent = 'Add New Timber Light Model';
+      const newId = 'tl_custom_' + Date.now().toString(36);
+      document.getElementById('edit-prod-id').value     = newId;
+      document.getElementById('edit-prod-model').value  = 'TL-NEW' + Math.floor(Math.random() * 90 + 10);
+      document.getElementById('edit-prod-name').value   = 'The Timber Lights — Architectural Pendant';
+      document.getElementById('edit-prod-height').value = '20"';
+      document.getElementById('edit-prod-price').value  = '21000';
+      document.getElementById('edit-prod-stock').value  = '15';
+      document.getElementById('edit-prod-image').value  = 'images/products/tl_baluster_finial.jpg';
+      document.getElementById('edit-prod-desc').value   = 'Handcrafted Solid Ghana Teak Wood signature hanging light.';
     }
-
-    if (prodModal) prodModal.classList.add("active");
+    if (prodModal) prodModal.classList.add('active');
   }
 
-  function saveProduct(e) {
+  async function saveProduct(e) {
     e.preventDefault();
-    const id = document.getElementById("edit-prod-id").value;
-    const model = document.getElementById("edit-prod-model").value.trim();
-    const name = document.getElementById("edit-prod-name").value.trim();
-    const height = document.getElementById("edit-prod-height").value.trim();
-    const price = Number(document.getElementById("edit-prod-price").value);
-    const stock = Number(document.getElementById("edit-prod-stock").value);
-    const image = document.getElementById("edit-prod-image").value.trim();
-    const desc = document.getElementById("edit-prod-desc").value.trim();
+    const btn = e.target.querySelector('[type="submit"]');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; }
 
-    const prods = getProducts();
-    const existingIdx = prods.findIndex(p => p.id === id);
+    const id     = document.getElementById('edit-prod-id').value;
+    const model  = document.getElementById('edit-prod-model').value.trim();
+    const name   = document.getElementById('edit-prod-name').value.trim();
+    const height = document.getElementById('edit-prod-height').value.trim();
+    const price  = Number(document.getElementById('edit-prod-price').value);
+    const stock  = Number(document.getElementById('edit-prod-stock').value);
+    const image  = document.getElementById('edit-prod-image').value.trim();
+    const desc   = document.getElementById('edit-prod-desc').value.trim();
 
     const productObj = {
-      id: id,
-      model: model,
-      name: name,
-      height: height,
-      wood: "Premium Ghana Teak Wood",
-      price: price,
-      priceUnit: "MRP (Incl. of all taxes)",
-      category: "hanging",
-      categoryLabel: "Wooden Hanging Light",
-      image: image || "images/products/tl_baluster_finial.jpg",
-      page: 1,
-      isFeatured: true,
-      stock: stock,
-      rating: 5,
-      reviewsCount: 30,
-      sizeNote: "Size mentioned is net wood size. Bulb will be as per actual.",
-      shortDesc: desc,
+      id, model, name, height,
+      wood: 'Premium Ghana Teak Wood',
+      price, price_unit: 'MRP (Incl. of all taxes)',
+      category: 'hanging', category_label: 'Wooden Hanging Light',
+      image: image || 'images/products/tl_baluster_finial.jpg',
+      page: 1, is_featured: true, stock,
+      rating: 5, reviews_count: 30,
+      size_note: 'Size mentioned is net wood size. Bulb will be as per actual.',
+      short_desc: desc,
       features: [
-        "Artisan lathe-turned solid Ghana Teak silhouette",
-        "Net Wood Height: " + height,
-        "Available in 8 Wood Polish Colors",
-        "Coating Options: Laquer, Melamine, PU, Wax (Matt / Semi / Glossy)",
-        "3-Year Comprehensive Craftsmanship Warranty"
+        'Artisan lathe-turned solid Ghana Teak silhouette',
+        'Net Wood Height: ' + height,
+        'Available in 8 Wood Polish Colors',
+        'Coating Options: Laquer, Melamine, PU, Wax (Matt / Semi / Glossy)',
+        '3-Year Comprehensive Craftsmanship Warranty'
       ],
       specifications: {
-        "Model Number": model,
-        "Height": height,
-        "Wood Material": "Premium Ghana Teak Wood",
-        "MRP": "₹" + price.toLocaleString('en-IN')
-      }
+        'Model Number': model, 'Height': height,
+        'Wood Material': 'Premium Ghana Teak Wood',
+        'MRP': '₹' + price.toLocaleString('en-IN')
+      },
+      updated_at: new Date().toISOString()
     };
 
-    if (existingIdx >= 0) {
-      prods[existingIdx] = { ...prods[existingIdx], ...productObj };
-    } else {
-      prods.unshift(productObj);
+    await db().upsert('products', productObj, 'id');
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-check"></i> Save Product Model'; }
+    if (prodModal) prodModal.classList.remove('active');
+    showAdminToast(`Model ${model} saved to Supabase! ✓`, 'success');
+    renderProductsTable();
+    renderKPIs();
+  }
+
+  async function deleteProduct(prodId) {
+    if (!confirm('Remove this model from the catalog?')) return;
+    await db().del('products', `id=eq.${prodId}`);
+    renderProductsTable();
+    renderKPIs();
+  }
+
+  // ───────────────────────────────────────────────────────
+  // LIVE USER QUERIES (REALTIME)
+  // ───────────────────────────────────────────────────────
+  async function loadLiveQueries() {
+    const pane = document.getElementById('live-queries-list');
+    if (!pane) return;
+    // Load last 50 queries
+    const queries = await db().select('user_queries', { order: 'created_at.desc', limit: 50 });
+    liveQueriesData = queries;
+    renderLiveQueriesList();
+  }
+
+  function renderLiveQueriesList() {
+    const pane = document.getElementById('live-queries-list');
+    if (!pane) return;
+
+    if (!liveQueriesData.length) {
+      pane.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:var(--adm-text-muted);">
+          <i class="fa-solid fa-wave-square" style="font-size:2rem; display:block; margin-bottom:1rem; opacity:0.3;"></i>
+          <p>No user activity yet. Activity from the live website will appear here in real time.</p>
+        </div>`;
+      return;
     }
 
-    saveProducts(prods);
-    if (prodModal) prodModal.classList.remove("active");
-    alert(`Model ${model} saved and updated in catalog!`);
+    const typeIcon = {
+      'search': 'fa-magnifying-glass',
+      'product_view': 'fa-eye',
+      'cart_add': 'fa-cart-plus',
+      'wishlist_add': 'fa-heart',
+      'checkout': 'fa-bag-shopping',
+      'contact': 'fa-envelope',
+      'page_visit': 'fa-globe',
+      'filter': 'fa-filter'
+    };
+    const typeColor = {
+      'search': '#60a5fa',
+      'product_view': '#a78bfa',
+      'cart_add': '#34d399',
+      'wishlist_add': '#f87171',
+      'checkout': '#D4A853',
+      'contact': '#fbbf24',
+      'page_visit': '#94a3b8',
+      'filter': '#67e8f9'
+    };
+
+    // Update stats
+    const statMap = { product_view: 'stat-product-views', search: 'stat-searches', cart_add: 'stat-cart-adds', checkout: 'stat-checkouts', contact: 'stat-contacts' };
+    Object.entries(statMap).forEach(([type, id]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = liveQueriesData.filter(q => q.query_type === type).length;
+    });
+
+    // Reset badge
+    const badge = document.getElementById('live-queries-badge');
+    if (badge && currentTab === 'livedata') { badge.style.display = 'none'; badge.textContent = '0'; }
+
+    pane.innerHTML = liveQueriesData.map(q => {
+      const icon  = typeIcon[q.query_type]  || 'fa-circle-dot';
+      const color = typeColor[q.query_type] || 'var(--adm-text-muted)';
+      const time  = new Date(q.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const date  = new Date(q.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+      const label = q.query_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+      return `
+        <div class="live-query-row" style="display:flex; align-items:flex-start; gap:0.75rem; padding:0.75rem 1rem; border-bottom:1px solid var(--adm-border); animation:fadeSlideIn 0.3s ease;">
+          <div style="width:32px; height:32px; border-radius:50%; background:${color}22; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:0.1rem;">
+            <i class="fa-solid ${icon}" style="color:${color}; font-size:0.75rem;"></i>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.2rem;">
+              <span style="font-size:0.72rem; font-weight:700; color:${color}; text-transform:uppercase; letter-spacing:0.05em;">${label}</span>
+              <span style="font-size:0.68rem; color:var(--adm-text-muted);">${date} ${time}</span>
+            </div>
+            ${q.query_text ? `<p style="font-size:0.82rem; color:var(--adm-text); margin:0 0 0.2rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">"${q.query_text}"</p>` : ''}
+            ${q.product_name ? `<p style="font-size:0.78rem; color:var(--adm-amber-light); margin:0;"><i class="fa-solid fa-lightbulb" style="font-size:0.65rem;"></i> ${q.product_name}</p>` : ''}
+            <p style="font-size:0.68rem; color:var(--adm-text-muted); margin:0.1rem 0 0;">Session: ${q.session_id || '—'}</p>
+          </div>
+        </div>`;
+    }).join('');
   }
 
-  function deleteProduct(prodId) {
-    if (!confirm("Are you sure you want to remove this model from the catalog?")) return;
-    let prods = getProducts();
-    prods = prods.filter(p => p.id !== prodId);
-    saveProducts(prods);
+  function startRealtimeSubscriptions() {
+    // Subscribe to new user_queries
+    const sub1 = db().subscribeRealtime('user_queries', (payload) => {
+      if (payload.type === 'INSERT') {
+        liveQueriesData.unshift(payload.record);
+        if (liveQueriesData.length > 100) liveQueriesData.pop();
+        renderLiveQueriesList();
+        // Update badge
+        const badge = document.getElementById('live-queries-badge');
+        if (badge && currentTab !== 'livedata') {
+          const count = parseInt(badge.textContent || '0') + 1;
+          badge.textContent = count;
+          badge.style.display = 'inline-flex';
+        }
+      }
+    });
+
+    // Subscribe to new leads
+    const sub2 = db().subscribeRealtime('leads', (payload) => {
+      if (payload.type === 'INSERT') {
+        renderLeadsTable();
+        renderKPIs();
+        showAdminToast(`New inquiry from ${payload.record?.name || 'visitor'}! 🔔`, 'success');
+      }
+    });
+
+    // Subscribe to new orders
+    const sub3 = db().subscribeRealtime('orders', (payload) => {
+      if (payload.type === 'INSERT') {
+        renderOrdersTable();
+        renderKPIs();
+        showAdminToast(`New order placed: ${payload.record?.order_id || ''}! 🎉`, 'success');
+      }
+    });
+
+    realtimeSubs = [sub1, sub2, sub3];
+
+    // Also load initial queries
+    loadLiveQueries();
   }
 
-  function changeOrderStatus(orderIdx, newStatus) {
-    const orders = getOrders();
-    if (orders[orderIdx]) {
-      orders[orderIdx].status = newStatus;
-      localStorage.setItem("timber_all_orders_v1", JSON.stringify(orders));
-      renderOrdersTable();
-      renderKPIs();
-    }
+  // ───────────────────────────────────────────────────────
+  // ADMIN TOAST
+  // ───────────────────────────────────────────────────────
+  function showAdminToast(msg, type) {
+    const existing = document.getElementById('admin-toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'admin-toast-notification';
+    const bg = type === 'success' ? '#16a34a' : type === 'danger' ? '#dc2626' : '#D4A853';
+    toast.style.cssText = `position:fixed; bottom:1.5rem; right:1.5rem; background:${bg}; color:#fff; padding:0.75rem 1.25rem; border-radius:0.5rem; font-size:0.85rem; font-weight:600; z-index:99999; box-shadow:0 4px 20px rgba(0,0,0,0.3); animation:fadeSlideIn 0.3s ease;`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 4000);
   }
 
-  // Export functions to global
+  // ───────────────────────────────────────────────────────
+  // INIT
+  // ───────────────────────────────────────────────────────
+  function init() {
+    checkAuthSession();
+    attachEvents();
+  }
+
+  // Global API
   window.AdminApp = {
     editProduct: openProductModal,
     deleteProduct: deleteProduct,
     changeOrderStatus: changeOrderStatus,
-    switchTab: switchTab
+    deleteLead: deleteLead,
+    switchTab: switchTab,
+    loadLiveQueries: loadLiveQueries
   };
 
-  // Run on load
-  document.addEventListener("DOMContentLoaded", init);
+  // Add animation keyframes if not present
+  if (!document.getElementById('admin-anim-style')) {
+    const style = document.createElement('style');
+    style.id = 'admin-anim-style';
+    style.textContent = `
+      @keyframes fadeSlideIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+      .kpi-loading { opacity:0.5; font-size:0.8rem; }
+    `;
+    document.head.appendChild(style);
+  }
 
+  document.addEventListener('DOMContentLoaded', init);
 })();

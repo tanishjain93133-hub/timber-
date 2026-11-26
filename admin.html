@@ -98,6 +98,12 @@
           <i class="fa-solid fa-key"></i>
           <span>Change Password</span>
         </button>
+
+        <button class="admin-nav-item" data-tab="livedata">
+          <i class="fa-solid fa-wave-square"></i>
+          <span>Live User Activity</span>
+          <span class="admin-nav-badge" id="live-queries-badge" style="display:none; background:#ef4444;">0</span>
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -334,7 +340,59 @@
 
         </section>
 
-        <!-- PANE 6: SECURITY / CHANGE PASSWORD -->
+        <!-- PANE 6: LIVE USER ACTIVITY -->
+        <section id="pane-livedata" class="admin-pane">
+
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title"><i class="fa-solid fa-wave-square"></i> Live User Activity &amp; Queries</h3>
+              <div style="display:flex; gap:0.75rem; align-items:center;">
+                <span style="font-size:0.75rem; color:var(--adm-text-muted);">Real-time Supabase feed</span>
+                <div class="topbar-badge-live">
+                  <span class="live-dot"></span>
+                  <span>Live</span>
+                </div>
+                <button class="admin-btn admin-btn-secondary" onclick="window.AdminApp.loadLiveQueries()" style="padding:0.4rem 0.75rem; font-size:0.78rem;">
+                  <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div style="display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+              <div style="flex:1; min-width:120px; padding:0.75rem 1rem; background:var(--adm-bg-card); border:1px solid var(--adm-border); border-radius:0.5rem; text-align:center;">
+                <div style="font-size:0.65rem; color:var(--adm-text-muted); text-transform:uppercase; margin-bottom:0.25rem;">Product Views</div>
+                <div id="stat-product-views" style="font-size:1.3rem; font-weight:800; color:#a78bfa;">0</div>
+              </div>
+              <div style="flex:1; min-width:120px; padding:0.75rem 1rem; background:var(--adm-bg-card); border:1px solid var(--adm-border); border-radius:0.5rem; text-align:center;">
+                <div style="font-size:0.65rem; color:var(--adm-text-muted); text-transform:uppercase; margin-bottom:0.25rem;">Searches</div>
+                <div id="stat-searches" style="font-size:1.3rem; font-weight:800; color:#60a5fa;">0</div>
+              </div>
+              <div style="flex:1; min-width:120px; padding:0.75rem 1rem; background:var(--adm-bg-card); border:1px solid var(--adm-border); border-radius:0.5rem; text-align:center;">
+                <div style="font-size:0.65rem; color:var(--adm-text-muted); text-transform:uppercase; margin-bottom:0.25rem;">Cart Adds</div>
+                <div id="stat-cart-adds" style="font-size:1.3rem; font-weight:800; color:#34d399;">0</div>
+              </div>
+              <div style="flex:1; min-width:120px; padding:0.75rem 1rem; background:var(--adm-bg-card); border:1px solid var(--adm-border); border-radius:0.5rem; text-align:center;">
+                <div style="font-size:0.65rem; color:var(--adm-text-muted); text-transform:uppercase; margin-bottom:0.25rem;">Checkouts</div>
+                <div id="stat-checkouts" style="font-size:1.3rem; font-weight:800; color:var(--adm-amber-light);">0</div>
+              </div>
+              <div style="flex:1; min-width:120px; padding:0.75rem 1rem; background:var(--adm-bg-card); border:1px solid var(--adm-border); border-radius:0.5rem; text-align:center;">
+                <div style="font-size:0.65rem; color:var(--adm-text-muted); text-transform:uppercase; margin-bottom:0.25rem;">Contacts</div>
+                <div id="stat-contacts" style="font-size:1.3rem; font-weight:800; color:#fbbf24;">0</div>
+              </div>
+            </div>
+
+            <div id="live-queries-list" style="max-height:600px; overflow-y:auto; border:1px solid var(--adm-border); border-radius:0.5rem;">
+              <div style="text-align:center; padding:3rem; color:var(--adm-text-muted);">
+                <i class="fa-solid fa-wave-square" style="font-size:2rem; display:block; margin-bottom:1rem; opacity:0.3;"></i>
+                <p>Connecting to live feed...</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- PANE 7: SECURITY / CHANGE PASSWORD -->
         <section id="pane-security" class="admin-pane">
           
           <div class="admin-card" style="max-width:550px;">
@@ -429,6 +487,7 @@
 
   <!-- Scripts -->
   <script src="js/data/products.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/components/admin-app.js"></script>
 </body>
 </html>

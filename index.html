@@ -852,6 +852,7 @@
 
   <!-- Scripts -->
   <script src="js/data/products.js"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/utils/helpers.js"></script>
   <script src="js/components/hero-light.js"></script>
   <script src="js/components/catalog.js"></script>
@@ -862,5 +863,49 @@
   <script src="js/components/search.js"></script>
   <script src="js/components/account.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- Supabase Query Logging: tracks searches, product views, cart adds, contact -->
+  <script>
+  (function() {
+    function waitForDB(cb, tries) {
+      tries = tries || 0;
+      if (window.SupabaseDB) return cb();
+      if (tries > 30) return;
+      setTimeout(() => waitForDB(cb, tries + 1), 300);
+    }
+
+    waitForDB(function() {
+      // Log page visit
+      SupabaseDB.logQuery('page_visit', document.title);
+
+      // Track search input (debounced)
+      let searchTimer;
+      const inputs = document.querySelectorAll('#global-search-input, #catalog-search-input');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          clearTimeout(searchTimer);
+          const val = this.value.trim();
+          if (val.length < 2) return;
+          searchTimer = setTimeout(() => {
+            SupabaseDB.logQuery('search', val);
+          }, 1200);
+        });
+      });
+
+      // Track contact form submissions handled by js/app.js
+      // Track product detail views — hook into ProductDetailEngine
+      const origOpen = window.ProductDetailEngine && window.ProductDetailEngine.open;
+      if (origOpen) {
+        const products = window.TIMBER_PRODUCTS || [];
+        window.ProductDetailEngine._origOpen = origOpen;
+        window.ProductDetailEngine.open = function(productId) {
+          const p = products.find(x => x.id === productId);
+          SupabaseDB.logQuery('product_view', productId, productId, p ? p.name : productId);
+          return origOpen.apply(this, arguments);
+        };
+      }
+    });
+  })();
+  </script>
 </body>
 </html>

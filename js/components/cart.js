@@ -83,26 +83,38 @@ window.CartEngine = (function() {
     }
   }
 
-  function addItem(productId, qty = 1, event = null) {
+  function addItem(productId, qty = 1, event = null, options = null) {
     if (event) event.stopPropagation();
+
+    const polish = (options && options.polish) ? options.polish : "Teak";
+    const coating = (options && options.coating) ? options.coating : "PU";
+    const tone = (options && options.tone) ? options.tone : "Matt";
+    const silent = !!(options && options.silent);
 
     const existing = cart.find(item => item.id === productId);
     if (existing) {
       existing.quantity += qty;
+      if (options && options.polish) existing.polish = polish;
+      if (options && options.coating) existing.coating = coating;
+      if (options && options.tone) existing.tone = tone;
     } else {
-      cart.push({ id: productId, quantity: qty });
+      cart.push({ id: productId, quantity: qty, polish, coating, tone });
     }
 
     saveCart();
     render();
     
-    if (window.TimberHelpers) {
-      const p = window.TIMBER_PRODUCTS ? TIMBER_PRODUCTS.find(x => x.id === productId) : null;
-      const title = p ? p.name : "Product";
+    const p = window.TIMBER_PRODUCTS ? TIMBER_PRODUCTS.find(x => x.id === productId) : null;
+    const title = p ? p.name : "Product";
+    if (window.TimberHelpers && !silent) {
       TimberHelpers.showToast(`${title} added to cart!`, "success");
     }
+    // Log cart add to Supabase
+    if (window.SupabaseDB) {
+      SupabaseDB.logQuery('cart_add', `${polish} / ${coating} ${tone}`, productId, title);
+    }
 
-    open();
+    if (!silent) open();
   }
 
   function updateQuantity(productId, delta) {
@@ -139,6 +151,9 @@ window.CartEngine = (function() {
         items.push({
           ...p,
           quantity: item.quantity,
+          polish: item.polish || "Teak",
+          coating: item.coating || "PU",
+          tone: item.tone || "Matt",
           itemTotal
         });
       }

@@ -40,6 +40,21 @@ window.CatalogEngine = (function() {
     bindEvents();
     renderHomeShowcase();
     renderCatalog();
+    syncFromSupabase();
+  }
+
+  async function syncFromSupabase() {
+    if (!window.SupabaseDB || !window.SupabaseDB.fetchProducts) return;
+    try {
+      const liveProducts = await window.SupabaseDB.fetchProducts();
+      if (Array.isArray(liveProducts) && liveProducts.length > 0) {
+        window.TIMBER_PRODUCTS = liveProducts;
+        renderHomeShowcase();
+        renderCatalog();
+      }
+    } catch (e) {
+      console.warn("Catalog Supabase sync fallback to local:", e);
+    }
   }
 
   function bindEvents() {
