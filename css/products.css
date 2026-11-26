@@ -7,6 +7,54 @@
    1. SHOP FILTER BAR (CLEAN & SIMPLE)
    ========================================================================== */
 
+/* 4-Part Category Tabs (All, Pendant, Lamp, Cluster) */
+.catalog-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.catalog-cat-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card, #ffffff);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.catalog-cat-tab:hover {
+  border-color: var(--amber-core);
+  color: var(--text-main);
+}
+
+.catalog-cat-tab.active {
+  background: var(--amber-core);
+  border-color: var(--amber-core);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(212, 168, 83, 0.28);
+}
+
+.catalog-cat-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.catalog-cat-tab.active .catalog-cat-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
 .shop-filter-bar {
   background: var(--bg-subtle);
   border: 1px solid var(--border-color);

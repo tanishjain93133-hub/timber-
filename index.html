@@ -104,24 +104,20 @@
       </nav>
       
       <div class="drawer-featured-models">
-        <span class="drawer-sub-title">Signature Timber Lights:</span>
+        <span class="drawer-sub-title">Signature Timber Lights (Collection 2026):</span>
         <div class="drawer-model-chips">
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_baluster_finial')">TL-BAL18 (18" Baluster Finial)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_walnut_bead_brass')">TL-WBD20 (20" Walnut Totem)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_duo_disc_spindle')">TL-SPN24 (24" Spindle Duo)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_twist_fluted_single')">TL-TWST10 (10" Spiral Twist)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_finial_bead_spindle')">TL-FIN16 (16" Finial Bead)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_classic_dome_finial')">TL-DOME18 (18" Dome Finial)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_flared_disc_duo')">TL-DISC16 (16" Flared Saucer)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_zen_halo_globe')">TL-HALO14 (14" Ripple Halo)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_chalice_spindle')">TL-CHAL18 (18" Chalice Downlight)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_zen_halo_trio')">TL-HALO3 (28" Halo Chandelier)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_bead_trio')">TL-BEAD3 (32" Totem Trio)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_stacked_totem_single')">TL-STK18 (18" Stacked Totem)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_cylinder_linear_bar')">TL-CYL48 (48" Linear Cylinder)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_slotted_channel_linear')">TL-CHAN54 (54" Slotted Channel)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_totem_quad')">TL-TOT4 (36" Totem Quad)</button>
-          <button class="drawer-chip" onclick="ProductDetailEngine.open('tl_geometric_totem_duo')">TL-TOT2 (30" Totem Duo)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('hg1057')">HG1057 (15" Pendant)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('hg1589')">HG1589 (15" Pendant)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('kg3058')">KG3058 (15" Pendant)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('hg8166')">HG8166 (15" Pendant)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('hg2865')">HG2865 (10" Pendant)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('gud2583')">GUD2583 (8" Bell Lamp)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('dg5956')">DG5956 (8" Twist Lamp)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('fe1886')">FE1886 (12" Bowl Lamp)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('gw8936')">GW8936 (20" Cluster)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('ks5855')">KS5855 (8" Trio Cluster)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('rk2985')">RK2985 (24" Cluster)</button>
+          <button class="drawer-chip" onclick="ProductDetailEngine.open('rk1866')">RK1866 (24" Cluster)</button>
         </div>
       </div>
 
@@ -299,13 +295,33 @@
 
         <!-- Merged All Timber Light Models Catalog (4 desktop / 2 mobile) -->
         <div id="shop-section" style="padding-top:1.5rem;">
+          <!-- 4-Part Category Tabs: All, Pendant, Lamp, Cluster -->
+          <div class="catalog-category-tabs" id="catalog-category-tabs" role="tablist" aria-label="Lighting Categories">
+            <button type="button" class="catalog-cat-tab active" data-category="all">
+              <span>All</span>
+              <span class="catalog-cat-count" id="cat-count-all">25</span>
+            </button>
+            <button type="button" class="catalog-cat-tab" data-category="pendant">
+              <span>Pendant</span>
+              <span class="catalog-cat-count" id="cat-count-pendant">15</span>
+            </button>
+            <button type="button" class="catalog-cat-tab" data-category="lamp">
+              <span>Lamp</span>
+              <span class="catalog-cat-count" id="cat-count-lamp">4</span>
+            </button>
+            <button type="button" class="catalog-cat-tab" data-category="cluster">
+              <span>Cluster</span>
+              <span class="catalog-cat-count" id="cat-count-cluster">6</span>
+            </button>
+          </div>
+
           <!-- Simple Filter Bar -->
           <div class="shop-filter-bar">
             
             <!-- Search Bar -->
             <div class="filter-search-wrap">
               <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="catalog-search-input" placeholder="Search by model (e.g. TL-BAL18, TL-CYL48, TL-TOT4, TL-DISC16, 18&quot;)...">
+              <input type="text" id="catalog-search-input" placeholder="Search by model (e.g. HG1057, KG3058, GUD2583, KS5855, RK2985, 15&quot;)...">
               <button id="catalog-search-clear" class="clear-btn d-none" aria-label="Clear Search"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
@@ -317,18 +333,9 @@
                 <option value="8">8" Height</option>
                 <option value="10">10" Height</option>
                 <option value="12">12" Height</option>
-                <option value="14">14" Diameter / Halo</option>
                 <option value="15">15" Height</option>
-                <option value="16">16" Diameter / Saucer</option>
-                <option value="18">18" Height</option>
                 <option value="20">20" Height</option>
                 <option value="24">24" Height</option>
-                <option value="28">28" Cluster / Drop</option>
-                <option value="30">30" Drop / Totem</option>
-                <option value="32">32" Drop / Cluster</option>
-                <option value="36">36" Drop / Totem</option>
-                <option value="48">48" Length (Linear)</option>
-                <option value="54">54" Length (Linear)</option>
               </select>
             </div>
 

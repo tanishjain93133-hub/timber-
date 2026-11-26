@@ -7,6 +7,7 @@
 window.CatalogEngine = (function() {
   
   let currentSearch = "";
+  let currentCategory = "all";
   let currentHeight = "all";
   let currentFinish = "all";
   let currentCoating = "all";
@@ -38,6 +39,7 @@ window.CatalogEngine = (function() {
     resetBtn = document.getElementById("catalog-reset-btn");
 
     bindEvents();
+    updateCategoryCounts();
     renderHomeShowcase();
     renderCatalog();
     syncFromSupabase();
@@ -49,6 +51,7 @@ window.CatalogEngine = (function() {
       const liveProducts = await window.SupabaseDB.fetchProducts();
       if (Array.isArray(liveProducts) && liveProducts.length > 0) {
         window.TIMBER_PRODUCTS = liveProducts;
+        updateCategoryCounts();
         renderHomeShowcase();
         renderCatalog();
       }
@@ -57,7 +60,26 @@ window.CatalogEngine = (function() {
     }
   }
 
+  function updateCategoryCounts() {
+    const prods = window.TIMBER_PRODUCTS || [];
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set("cat-count-all", prods.length);
+    set("cat-count-pendant", prods.filter(p => p.category === "pendant").length);
+    set("cat-count-lamp", prods.filter(p => p.category === "lamp").length);
+    set("cat-count-cluster", prods.filter(p => p.category === "cluster").length);
+  }
+
   function bindEvents() {
+    // Category Tabs (All, Pendant, Lamp, Cluster)
+    document.querySelectorAll(".catalog-cat-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        currentCategory = tab.getAttribute("data-category") || "all";
+        document.querySelectorAll(".catalog-cat-tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        renderCatalog();
+      });
+    });
+
     // Search input
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
@@ -118,11 +140,15 @@ window.CatalogEngine = (function() {
 
   function resetFilters() {
     currentSearch = "";
+    currentCategory = "all";
     currentHeight = "all";
     currentFinish = "all";
     currentCoating = "all";
     currentSort = "featured";
 
+    document.querySelectorAll(".catalog-cat-tab").forEach(t => {
+      t.classList.toggle("active", t.getAttribute("data-category") === "all");
+    });
     if (heightSelect) heightSelect.value = "all";
     if (finishSelect) finishSelect.value = "all";
     if (coatingSelect) coatingSelect.value = "all";
@@ -137,6 +163,11 @@ window.CatalogEngine = (function() {
     if (!window.TIMBER_PRODUCTS) return [];
 
     let list = [...window.TIMBER_PRODUCTS];
+
+    // 0. Category Filter (All / Pendant / Lamp / Cluster)
+    if (currentCategory !== "all") {
+      list = list.filter(p => (p.category || "").toLowerCase() === currentCategory);
+    }
 
     // 1. Height Filter
     if (currentHeight !== "all") {
@@ -216,7 +247,7 @@ window.CatalogEngine = (function() {
         </div>
 
         <div class="card-content">
-          <div class="card-model-tag">MODEL: ${product.model}</div>
+          <div class="card-model-tag">MODEL: ${product.model} &bull; ${product.categoryLabel || 'Pendant Light'}</div>
           <h3 class="card-title" onclick="ProductDetailEngine.open('${product.id}')">${product.model}</h3>
           
           <div class="card-material-tags">
@@ -261,7 +292,7 @@ window.CatalogEngine = (function() {
     }
 
     if (resetBtn) {
-      const isFiltered = currentHeight !== "all" || currentFinish !== "all" || currentCoating !== "all" || currentSearch !== "";
+      const isFiltered = currentCategory !== "all" || currentHeight !== "all" || currentFinish !== "all" || currentCoating !== "all" || currentSearch !== "";
       resetBtn.style.display = isFiltered ? "inline-block" : "none";
     }
 
