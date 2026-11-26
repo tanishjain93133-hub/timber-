@@ -175,10 +175,10 @@
         
         <div class="section-header flex-between">
           <div>
-            <h2 class="section-title">Featured Timber Lights</h2>
-            <p class="section-subtitle">Explore bestselling wooden pendant models from our Collection 2026 catalog.</p>
+            <h2 class="section-title">All Timber Light Models</h2>
+            <p class="section-subtitle">Complete collection of handcrafted Ghanaian Teak Wood pendant luminaires, linear beams, and geometric chandeliers.</p>
           </div>
-          <a href="#shop-section" class="section-link">View All Models <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="#finishes-section" class="section-link">Polish &amp; Finishes <i class="fa-solid fa-arrow-right"></i></a>
         </div>
 
         <!-- Comprehensive Material Quality & Technical Standards Showcase -->
@@ -297,9 +297,72 @@
           </div>
         </div>
 
-        <!-- 4 Products Per Row Desktop / 2 Mobile Grid -->
-        <div class="products-grid" id="home-featured-grid">
-          <!-- Populated via CatalogEngine.renderHomeShowcase() -->
+        <!-- Merged All Timber Light Models Catalog (4 desktop / 2 mobile) -->
+        <div id="shop-section" style="padding-top:1.5rem;">
+          <!-- Simple Filter Bar -->
+          <div class="shop-filter-bar">
+            
+            <!-- Search Bar -->
+            <div class="filter-search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="catalog-search-input" placeholder="Search by model (e.g. TL-BAL18, TL-CYL48, TL-TOT4, TL-DISC16, 18&quot;)...">
+              <button id="catalog-search-clear" class="clear-btn d-none" aria-label="Clear Search"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Height Filter -->
+            <div class="filter-select-wrap">
+              <label for="filter-height-select">Height / Size:</label>
+              <select id="filter-height-select">
+                <option value="all">All Sizes</option>
+                <option value="8">8" Height</option>
+                <option value="10">10" Height</option>
+                <option value="12">12" Height</option>
+                <option value="14">14" Diameter / Halo</option>
+                <option value="15">15" Height</option>
+                <option value="16">16" Diameter / Saucer</option>
+                <option value="18">18" Height</option>
+                <option value="20">20" Height</option>
+                <option value="24">24" Height</option>
+                <option value="28">28" Cluster / Drop</option>
+                <option value="30">30" Drop / Totem</option>
+                <option value="32">32" Drop / Cluster</option>
+                <option value="36">36" Drop / Totem</option>
+                <option value="48">48" Length (Linear)</option>
+                <option value="54">54" Length (Linear)</option>
+              </select>
+            </div>
+
+            <!-- Price Sort -->
+            <div class="filter-select-wrap">
+              <label for="catalog-sort">Sort by:</label>
+              <select id="catalog-sort">
+                <option value="featured">Featured (Catalog Order)</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="newest">Catalog Page</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Active Filter Status & Count -->
+          <div class="shop-results-status">
+            <span id="catalog-count-label">Showing all models</span>
+            <button id="catalog-reset-btn" class="btn-text" style="display:none;">Reset Filters</button>
+          </div>
+
+          <!-- Main Product Grid (4 desktop / 2 mobile) -->
+          <div class="products-grid" id="products-grid">
+            <!-- Populated dynamically via CatalogEngine.renderCatalog() -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="catalog-empty-state" class="empty-state d-none">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>No models match your search</h3>
+            <p>Try searching for a different model name or resetting the size filter.</p>
+            <button class="btn btn-outline mt-3" onclick="CatalogEngine.resetFilters()">Show All Models</button>
+          </div>
         </div>
 
       </div>
@@ -375,86 +438,7 @@
     </section>
 
     <!-- ==================================================== -->
-    <!-- 5. SHOP SECTION                                      -->
-    <!-- ==================================================== -->
-    <section id="shop-section" class="section shop-section">
-      <div class="section-container">
-        
-        <div class="section-header">
-          <h2 class="section-title">All Timber Light Models</h2>
-          <p class="section-subtitle">Complete collection of handcrafted Ghanaian Teak Wood pendant luminaires, linear beams, and geometric chandeliers.</p>
-        </div>
-
-        <!-- Simple Filter Bar -->
-        <div class="shop-filter-bar">
-          
-          <!-- Search Bar -->
-          <div class="filter-search-wrap">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="catalog-search-input" placeholder="Search by model (e.g. TL-BAL18, TL-CYL48, TL-TOT4, TL-DISC16, 18&quot;)...">
-            <button id="catalog-search-clear" class="clear-btn d-none" aria-label="Clear Search"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-
-          <!-- Height Filter -->
-          <div class="filter-select-wrap">
-            <label for="filter-height-select">Height / Size:</label>
-            <select id="filter-height-select">
-              <option value="all">All Sizes</option>
-              <option value="8">8" Height</option>
-              <option value="10">10" Height</option>
-              <option value="12">12" Height</option>
-              <option value="14">14" Diameter / Halo</option>
-              <option value="15">15" Height</option>
-              <option value="16">16" Diameter / Saucer</option>
-              <option value="18">18" Height</option>
-              <option value="20">20" Height</option>
-              <option value="24">24" Height</option>
-              <option value="28">28" Cluster / Drop</option>
-              <option value="30">30" Drop / Totem</option>
-              <option value="32">32" Drop / Cluster</option>
-              <option value="36">36" Drop / Totem</option>
-              <option value="48">48" Length (Linear)</option>
-              <option value="54">54" Length (Linear)</option>
-            </select>
-          </div>
-
-          <!-- Price Sort -->
-          <div class="filter-select-wrap">
-            <label for="catalog-sort">Sort by:</label>
-            <select id="catalog-sort">
-              <option value="featured">Featured (Catalog Order)</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="newest">Catalog Page</option>
-            </select>
-          </div>
-
-        </div>
-
-        <!-- Active Filter Status & Count -->
-        <div class="shop-results-status">
-          <span id="catalog-count-label">Showing all models</span>
-          <button id="catalog-reset-btn" class="btn-text" style="display:none;">Reset Filters</button>
-        </div>
-
-        <!-- Main Product Grid (4 desktop / 2 mobile) -->
-        <div class="products-grid" id="products-grid">
-          <!-- Populated dynamically via CatalogEngine.renderCatalog() -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="catalog-empty-state" class="empty-state d-none">
-          <i class="fa-solid fa-box-open"></i>
-          <h3>No models match your search</h3>
-          <p>Try searching for a different model name or resetting the size filter.</p>
-          <button class="btn btn-outline mt-3" onclick="CatalogEngine.resetFilters()">Show All Models</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ==================================================== -->
-    <!-- 6. ABOUT US (FROM PDF PAGE 2, 3, 4)                  -->
+    <!-- 5. ABOUT US (FROM PDF PAGE 2, 3, 4)                  -->
     <!-- ==================================================== -->
     <section id="about" class="section about-section bg-subtle">
       <div class="section-container">
