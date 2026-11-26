@@ -73,6 +73,83 @@ window.CartEngine = (function() {
       document.body.style.overflow = "hidden";
     }
     render();
+    syncLiveOrders();
+  }
+
+  function getMyOrders() {
+    try {
+      return JSON.parse(localStorage.getItem("timber_my_orders") || "[]");
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async function syncLiveOrders() {
+    const orders = getMyOrders();
+    if (!orders.length || !window.SupabaseDB || !window.SupabaseDB.fetchMyOrdersStatus) return;
+    const ids = orders.map(o => o.order_id).filter(Boolean);
+    if (!ids.length) return;
+    const live = await window.SupabaseDB.fetchMyOrdersStatus(ids);
+    if (Array.isArray(live) && live.length > 0) {
+      const byId = {};
+      live.forEach(row => { byId[row.order_id] = row; });
+      const merged = orders.map(o => byId[o.order_id] ? { ...o, status: byId[o.order_id].status } : o);
+      try { localStorage.setItem("timber_my_orders", JSON.stringify(merged)); } catch (e) {}
+      render();
+    }
+  }
+
+  function renderOrderHistoryHtml() {
+    const orders = getMyOrders();
+    if (!orders.length) return "";
+    const steps = ["Confirmed", "In Assembly", "Dispatched", "Delivered"];
+
+    return `
+      <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-color);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <h4 style="font-size:0.9rem; font-weight:700; margin:0; display:flex; align-items:center; gap:0.4rem;">
+            <i class="fa-solid fa-box-open" style="color:var(--amber-core, #D4A853);"></i>
+            <span>Your Orders &amp; Delivery (${orders.length})</span>
+          </h4>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.65rem;">
+          ${orders.slice(0, 5).map(o => {
+            const currentIdx = Math.max(0, steps.indexOf(o.status || "Confirmed"));
+            const itemsSummary = (o.items || [])
+              .map(i => `${i.qty || 1}&times; ${i.model || i.name} (${i.polish || "Teak"}${i.coating ? ", " + i.coating : ""})`)
+              .join("<br>");
+            const total = Number(o.totals?.finalTotal || 0).toLocaleString("en-IN");
+            const pay = o.payment_method ? String(o.payment_method).toUpperCase() : "COD";
+            return `
+              <div style="background:var(--bg-subtle, #f8fafc); border:1px solid var(--border-color, #e2e8f0); border-radius:8px; padding:0.75rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem; font-size:0.82rem;">
+                  <strong>#${o.order_id}</strong>
+                  <span style="font-size:0.72rem; font-weight:700; color:var(--amber-dark, #b45309); background:var(--amber-soft, #fef3c7); padding:0.15rem 0.5rem; border-radius:999px;">${o.status || "Confirmed"}</span>
+                </div>
+                <div style="font-size:0.76rem; color:var(--text-muted); line-height:1.4; margin-bottom:0.45rem;">
+                  ${itemsSummary}
+                </div>
+                <div style="display:flex; align-items:center; gap:0.2rem; margin:0.4rem 0;">
+                  ${steps.map((step, idx) => {
+                    const active = idx <= currentIdx;
+                    return `
+                      <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:0.15rem;">
+                        <div style="width:100%; height:3px; border-radius:2px; background:${active ? "var(--amber-core, #D4A853)" : "var(--border-color, #e2e8f0)"};"></div>
+                        <span style="font-size:0.6rem; font-weight:${active ? "700" : "500"}; color:${active ? "var(--amber-dark, #b45309)" : "var(--text-muted)"};">${step}</span>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-top:0.35rem;">
+                  <span>${o.date || ""} &bull; ${pay}</span>
+                  <strong style="color:var(--text-main);">₹${total}</strong>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      </div>
+    `;
   }
 
   function close() {
@@ -189,11 +266,12 @@ window.CartEngine = (function() {
 
     if (summary.items.length === 0) {
       drawerItems.innerHTML = `
-        <div style="text-align:center; padding: 3rem 1rem; color:var(--text-muted);">
+        <div style="text-align:center; padding: 2rem 1rem 1rem; color:var(--text-muted);">
           <i class="fa-solid fa-bag-shopping" style="font-size:2.5rem; margin-bottom:1rem; opacity:0.3;"></i>
           <h4 style="font-size:1.1rem; color:var(--text-main); margin-bottom:0.5rem;">Your cart is empty</h4>
           <p style="font-size:0.85rem;">Discover our handcrafted wooden lighting collection.</p>
         </div>
+        ${renderOrderHistoryHtml()}
       `;
       return;
     }
@@ -206,7 +284,7 @@ window.CartEngine = (function() {
 
         <div class="cart-item-details">
           <h4>${item.name}</h4>
-          <div class="cart-item-meta">Height: ${item.height} &bull; ${item.wood}</div>
+          <div class="cart-item-meta">Height: ${item.height} &bull; ${item.polish || 'Teak'} (${item.coating || 'PU'} ${item.tone || 'Matt'})</div>
           <div class="cart-item-price">${fmt(item.itemTotal)}</div>
         </div>
 
@@ -222,7 +300,7 @@ window.CartEngine = (function() {
           </div>
         </div>
       </div>
-    `).join("");
+    `).join("") + renderOrderHistoryHtml();
   }
 
   function clearCart() {

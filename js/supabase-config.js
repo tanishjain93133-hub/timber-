@@ -332,6 +332,22 @@ window.SupabaseDB = (function () {
     return (rows && rows[0]) ? rows[0] : null;
   }
 
+  async function fetchMyOrdersStatus(orderIds) {
+    if (!Array.isArray(orderIds) || orderIds.length === 0) return [];
+    try {
+      const h = await authHeaders({}, false);
+      const r = await fetch(`${URL}/rest/v1/rpc/get_orders_status`, {
+        method: 'POST',
+        headers: h,
+        body: JSON.stringify({ p_order_ids: orderIds })
+      });
+      if (!r.ok) return [];
+      return await r.json();
+    } catch (e) {
+      return [];
+    }
+  }
+
   function getSessionId() {
     let sid = sessionStorage.getItem('tl_session_id');
     if (!sid) {
@@ -357,7 +373,7 @@ window.SupabaseDB = (function () {
   return {
     signIn, signOut, isAuthenticated, getSession, getAccessToken, updatePassword,
     select, insert, upsert, update, del,
-    subscribeRealtime, fetchProducts, fetchSiteSettings, mapDbProductToLocal,
+    subscribeRealtime, fetchProducts, fetchSiteSettings, fetchMyOrdersStatus, mapDbProductToLocal,
     getSessionId, logQuery
   };
 })();
