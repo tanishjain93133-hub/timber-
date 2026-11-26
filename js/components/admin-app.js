@@ -126,6 +126,15 @@
     };
     if (paneTitle) paneTitle.textContent = titles[tabName] || 'Control Panel';
     if (sidebar) sidebar.classList.remove('mobile-open');
+
+    // Always fetch fresh data when switching tabs
+    if (isAuthenticated) {
+      if (tabName === 'orders') renderOrdersTable();
+      else if (tabName === 'leads') renderLeadsTable();
+      else if (tabName === 'products') renderProductsTable();
+      else if (tabName === 'livedata') loadLiveQueries();
+      else if (tabName === 'dashboard') { renderKPIs(); renderOrdersTable(); }
+    }
   }
 
   // ───────────────────────────────────────────────────────
@@ -175,6 +184,9 @@
     if (elOrders) elOrders.textContent = `${orders.length} (${activeOrders} Active)`;
     if (elProds)  elProds.textContent  = `${products.length} Models`;
     if (elLeads)  elLeads.textContent  = `${leads.length} Enquiries`;
+
+    const ordersBadge = document.getElementById('orders-nav-badge');
+    if (ordersBadge) ordersBadge.textContent = orders.length;
   }
 
   // ───────────────────────────────────────────────────────
@@ -263,17 +275,19 @@
   // ───────────────────────────────────────────────────────
   async function renderOrdersTable() {
     const tbody = document.getElementById('admin-orders-tbody');
-    if (!tbody) return;
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">Loading orders...</td></tr>`;
+    const dashTbody = document.getElementById('dashboard-recent-orders-tbody');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">Loading orders...</td></tr>`;
 
     let orders = await db().select('orders', { order: 'created_at.desc' });
 
     if (orders.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">No orders yet. Orders from the checkout form will appear here live.</td></tr>`;
+      const emptyRow = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--adm-text-muted);">No orders yet. Orders from the checkout form will appear here live.</td></tr>`;
+      if (tbody) tbody.innerHTML = emptyRow;
+      if (dashTbody) dashTbody.innerHTML = emptyRow;
       return;
     }
 
-    tbody.innerHTML = orders.map((o, idx) => `
+    const renderRows = (list) => list.map((o) => `
       <tr>
         <td><strong>${o.order_id}</strong><br><small style="color:var(--adm-text-muted);">${o.date || new Date(o.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}</small></td>
         <td>
@@ -292,6 +306,9 @@
         </td>
       </tr>
     `).join('');
+
+    if (tbody) tbody.innerHTML = renderRows(orders);
+    if (dashTbody) dashTbody.innerHTML = renderRows(orders.slice(0, 5));
   }
 
   async function changeOrderStatus(orderId, newStatus) {
@@ -637,7 +654,8 @@
     changeOrderStatus: changeOrderStatus,
     deleteLead: deleteLead,
     switchTab: switchTab,
-    loadLiveQueries: loadLiveQueries
+    loadLiveQueries: loadLiveQueries,
+    refreshOrders: () => { renderOrdersTable(); renderKPIs(); }
   };
 
   // Add animation keyframes if not present

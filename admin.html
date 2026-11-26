@@ -82,6 +82,7 @@
         <button class="admin-nav-item" data-tab="orders">
           <i class="fa-solid fa-box-open"></i>
           <span>Orders &amp; Shipments</span>
+          <span class="admin-nav-badge" id="orders-nav-badge">0</span>
         </button>
 
         <button class="admin-nav-item" data-tab="leads">
@@ -196,6 +197,32 @@
             </div>
           </div>
 
+          <!-- Recent Orders Preview -->
+          <div class="admin-card" style="margin-top:1.5rem;">
+            <div class="admin-card-header">
+              <h3 class="admin-card-title"><i class="fa-solid fa-box-open"></i> Recent Customer Orders</h3>
+              <button class="admin-btn admin-btn-secondary" onclick="window.AdminApp.refreshOrders()" style="padding:0.4rem 0.75rem; font-size:0.78rem;">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Order ID &amp; Date</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-recent-orders-tbody">
+                  <tr><td colspan="5" style="text-align:center; padding:1.5rem; color:var(--adm-text-muted);">Loading recent orders...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </section>
 
         <!-- PANE 2: PRODUCTS -->
@@ -238,6 +265,9 @@
           <div class="admin-card">
             <div class="admin-card-header">
               <h3 class="admin-card-title"><i class="fa-solid fa-box-open"></i> Customer Orders &amp; Dispatch</h3>
+              <button class="admin-btn admin-btn-secondary" onclick="window.AdminApp.refreshOrders()" style="padding:0.4rem 0.75rem; font-size:0.78rem;">
+                <i class="fa-solid fa-rotate"></i> Refresh Orders
+              </button>
             </div>
 
             <div class="table-responsive">
